@@ -159,7 +159,7 @@ export const AIChat: React.FC = () => {
         muted
         playsInline
         onContextMenu={(e) => e.preventDefault()}
-        className="absolute inset-0 w-full h-full object-cover z-0 opacity-20 grayscale"
+        className="absolute inset-0 w-full h-full object-cover z-0 opacity-15 pointer-events-none mix-blend-multiply"
       />
 
       <div className="relative z-10 flex flex-col h-full">
@@ -169,12 +169,12 @@ export const AIChat: React.FC = () => {
               key={idx} 
               className={`flex items-start gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
             >
-              <div className={`w-8 h-8 rounded-full border-2 border-black flex items-center justify-center shrink-0 ${msg.role === 'assistant' ? 'bg-yellow-200' : 'bg-blue-200'}`}>
+              <div className={`w-8 h-8 rounded-full border-2 border-black flex items-center justify-center shrink-0 ${msg.role === 'assistant' ? 'bg-yellow-200' : 'bg-blue-200'} shadow-hard-pressed`}>
                 {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
               </div>
               <div 
-                className={`max-w-[80%] p-3 rounded-lg border-2 border-black shadow-hard-pressed font-body text-base leading-snug backdrop-blur-sm
-                ${msg.role === 'assistant' ? 'bg-white/80 rounded-tl-none' : 'bg-blue-50/80 rounded-tr-none'}`}
+                className={`max-w-[80%] p-3 rounded-lg border-2 border-black shadow-hard-pressed font-body text-base leading-snug backdrop-blur-md
+                ${msg.role === 'assistant' ? 'bg-white/90 rounded-tl-none' : 'bg-blue-50/90 rounded-tr-none'}`}
               >
                 {msg.role === 'assistant' ? <TypewriterText text={msg.text} /> : msg.text}
               </div>
@@ -182,16 +182,16 @@ export const AIChat: React.FC = () => {
           ))}
           {isLoading && (
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full border-2 border-black flex items-center justify-center shrink-0 bg-yellow-200">
+              <div className="w-8 h-8 rounded-full border-2 border-black flex items-center justify-center shrink-0 bg-yellow-200 shadow-hard-pressed">
                 <Bot size={16} />
               </div>
-              <div className="bg-white/80 backdrop-blur-sm p-3 rounded-lg rounded-tl-none border-2 border-black shadow-hard-pressed">
+              <div className="bg-white/90 backdrop-blur-md p-3 rounded-lg rounded-tl-none border-2 border-black shadow-hard-pressed">
                 <LoadingDots />
               </div>
             </div>
           )}
         </div>
-        <div className="p-3 border-t-2 border-black bg-gray-50/80 backdrop-blur-sm">
+        <div className="p-3 border-t-2 border-black bg-gray-50/90 backdrop-blur-md">
           <div className="flex gap-2">
             <input
               type="text"

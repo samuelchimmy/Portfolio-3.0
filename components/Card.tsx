@@ -22,7 +22,7 @@ export const Card: React.FC<CardProps> = ({ children, className, title, noPaddin
       )}
     >
       {/* Window Controls Header */}
-      <div className="border-b-2 border-black p-3 bg-gray-50 flex items-center justify-between shrink-0">
+      <div className="border-b-2 border-black p-3 bg-gray-50 flex items-center justify-between shrink-0 relative z-20">
         <div className="flex gap-2">
           <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-black/20" />
           <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-black/20" />
@@ -37,7 +37,7 @@ export const Card: React.FC<CardProps> = ({ children, className, title, noPaddin
       </div>
 
       {/* Content */}
-      <div className={clsx("flex-1 h-full", !noPadding && "p-6")}>
+      <div className={clsx("flex-1 min-h-0 relative z-10", !noPadding && "p-6")}>
         {children}
       </div>
     </motion.div>
