@@ -65,7 +65,6 @@ export const AIChat: React.FC = () => {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   
-  // State for placeholder typewriter effect
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [currentPlaceholder, setCurrentPlaceholder] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -76,32 +75,28 @@ export const AIChat: React.FC = () => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  // Typewriter logic for placeholder
   useEffect(() => {
     const currentHint = HINT_PHRASES[placeholderIndex];
     let timeoutId: number;
 
     if (isDeleting) {
-      // Deleting text
       if (currentPlaceholder.length > 0) {
         timeoutId = window.setTimeout(() => {
           setCurrentPlaceholder(currentPlaceholder.slice(0, -1));
-        }, 50); // Faster delete speed
+        }, 50);
       } else {
         setIsDeleting(false);
         setPlaceholderIndex((prev) => (prev + 1) % HINT_PHRASES.length);
       }
     } else {
-      // Typing text
       if (currentPlaceholder.length < currentHint.length) {
         timeoutId = window.setTimeout(() => {
           setCurrentPlaceholder(currentHint.slice(0, currentPlaceholder.length + 1));
-        }, 100); // Faster typing speed
+        }, 100);
       } else {
-        // Pause before deleting
         timeoutId = window.setTimeout(() => {
           setIsDeleting(true);
-        }, 2000); // Pause for 2s
+        }, 2000);
       }
     }
 
@@ -156,9 +151,19 @@ export const AIChat: React.FC = () => {
   };
 
   return (
-    <Card className="h-full flex flex-col" title="AI Assistant (Gemini 1.5 Flash)" noPadding>
-      <div className="flex flex-col h-full bg-[#F9FAFB]">
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[300px] lg:max-h-none no-scrollbar">
+    <Card className="h-full flex flex-col overflow-hidden" title="AI Assistant (Gemini 1.5 Flash)" noPadding>
+      <video
+        src="/assets/bg.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        onContextMenu={(e) => e.preventDefault()}
+        className="absolute inset-0 w-full h-full object-cover z-0 opacity-20 grayscale"
+      />
+
+      <div className="relative z-10 flex flex-col h-full">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar min-h-0">
           {messages.map((msg, idx) => (
             <div 
               key={idx} 
@@ -168,8 +173,8 @@ export const AIChat: React.FC = () => {
                 {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
               </div>
               <div 
-                className={`max-w-[80%] p-3 rounded-lg border-2 border-black shadow-hard-pressed font-body text-base leading-snug
-                ${msg.role === 'assistant' ? 'bg-white rounded-tl-none' : 'bg-blue-50 rounded-tr-none'}`}
+                className={`max-w-[80%] p-3 rounded-lg border-2 border-black shadow-hard-pressed font-body text-base leading-snug backdrop-blur-sm
+                ${msg.role === 'assistant' ? 'bg-white/80 rounded-tl-none' : 'bg-blue-50/80 rounded-tr-none'}`}
               >
                 {msg.role === 'assistant' ? <TypewriterText text={msg.text} /> : msg.text}
               </div>
@@ -180,13 +185,13 @@ export const AIChat: React.FC = () => {
               <div className="w-8 h-8 rounded-full border-2 border-black flex items-center justify-center shrink-0 bg-yellow-200">
                 <Bot size={16} />
               </div>
-              <div className="bg-white p-3 rounded-lg rounded-tl-none border-2 border-black shadow-hard-pressed">
+              <div className="bg-white/80 backdrop-blur-sm p-3 rounded-lg rounded-tl-none border-2 border-black shadow-hard-pressed">
                 <LoadingDots />
               </div>
             </div>
           )}
         </div>
-        <div className="p-3 border-t-2 border-black bg-gray-50">
+        <div className="p-3 border-t-2 border-black bg-gray-50/80 backdrop-blur-sm">
           <div className="flex gap-2">
             <input
               type="text"
