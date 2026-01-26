@@ -18,12 +18,12 @@ const StatusBadge: React.FC<{ status: 'Live' | 'Building' | 'Sunsetted' }> = ({ 
   } : {};
   
   return (
-    <motion.div 
+    <motion.span 
       animate={liveAnimation}
-      className={clsx("absolute top-3 right-3 px-2 py-0.5 text-[11px] font-bold rounded-full border leading-tight z-10", statusStyles[status])}
+      className={clsx("inline-block ml-3 px-1.5 py-0.5 text-[10px] uppercase tracking-wide font-bold rounded-full border leading-tight align-middle", statusStyles[status])}
     >
       {status}
-    </motion.div>
+    </motion.span>
   );
 };
 
@@ -40,18 +40,18 @@ export const ProjectShowcase: React.FC = () => {
     <Card className="h-full relative group" title={`Showcase (${index + 1}/${PROJECTS.length})`} noPadding>
       <div className="h-full flex flex-col relative overflow-hidden bg-white">
         
-        {/* Navigation Buttons - Absolute centered vertically */}
+        {/* Navigation Buttons - Absolute centered vertically, Minimal Style */}
         <button 
           onClick={prevProject}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 bg-white border-2 border-black rounded-full shadow-hard hover:shadow-hard-pressed active:translate-y-1 transition-all"
+          className="absolute left-1 top-1/2 -translate-y-1/2 z-20 p-2 text-black/40 hover:text-black transition-colors focus:outline-none"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={32} strokeWidth={1.5} />
         </button>
         <button 
           onClick={nextProject}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 p-2 bg-white border-2 border-black rounded-full shadow-hard hover:shadow-hard-pressed active:translate-y-1 transition-all"
+          className="absolute right-1 top-1/2 -translate-y-1/2 z-20 p-2 text-black/40 hover:text-black transition-colors focus:outline-none"
         >
-          <ChevronRight size={20} />
+          <ChevronRight size={32} strokeWidth={1.5} />
         </button>
 
         <div className="flex-1 p-8 md:px-16 flex flex-col justify-center h-full">
@@ -64,19 +64,19 @@ export const ProjectShowcase: React.FC = () => {
               transition={{ duration: 0.3, ease: 'easeInOut' }}
               className="flex flex-col h-full justify-center relative"
             >
-              <StatusBadge status={project.status} />
-              <div className="flex items-baseline gap-3 mb-2 flex-wrap">
+              <div className="flex items-center mb-2 flex-wrap">
                 <h3 
                   className="font-display text-4xl"
                   style={{ color: project.color }}
                 >
                   {project.title}
                 </h3>
+                <StatusBadge status={project.status} />
                 <a 
                   href={project.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-black transition-colors"
+                  className="text-gray-400 hover:text-black transition-colors ml-2"
                 >
                   <ExternalLink size={18} />
                 </a>

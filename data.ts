@@ -48,7 +48,7 @@ export const PROJECTS: Project[] = [
   {
     title: "MoniPay",
     description: "Decentralized SoftPOS protocol on Base replacing hardware terminals. Features a proprietary Gasless Relayer and 'Invisible Wallet' monitag architecture using local AES-GCM encryption.",
-    stack: ["React", "Base Chain", "Solidity", "Supabase", "CapacitorJS"],
+    stack: ["React", "Base", "Solidity", "Supabase", "CapacitorJS"],
     color: "#0052FF",
     url: "https://monipay.xyz",
     status: 'Live',
@@ -145,7 +145,8 @@ export const TECH_ICONS: Record<string, React.ElementType> = {
   "Gemini 1.5 Pro": FaGem,
   "Gemini 1.5 Flash": FaGem,
   "Solidity": SiSolidity,
-  "Base Chain": SiCoinbase,
+  "Base": SiCoinbase,
+  "Base Chain": SiCoinbase, // Keeping fallback just in case
   "PostgreSQL": SiPostgresql,
   "Vite": SiVite,
   "Next.js": SiNextdotjs,
@@ -156,7 +157,7 @@ export const TECH_ICONS: Record<string, React.ElementType> = {
   "Account Abstraction": VscTerminalCmd,
   "CapacitorJS": SiCapacitor,
   "Tailwind CSS": SiTailwindcss,
-  "SQL": SiPostgresql, // Using PG icon for generic SQL
+  "SQL": SiPostgresql, 
 };
 
 export const TECH_STACK = [

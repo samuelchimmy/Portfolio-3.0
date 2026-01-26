@@ -9,18 +9,13 @@ interface Message {
   text: string;
 }
 
-// System message to guide the mock AI's responses
-const SYSTEM_PROMPT = `You are a helpful virtual assistant for Samuel, a Product Engineer.
-Your goal is to answer questions about his skills, projects, and availability.
-Be concise and friendly.
-
-Samuel's Skills: React, TypeScript, Solidity, Rust, Supabase, Google Cloud, Docker, Gemini API, Base Chain.
-
-Samuel's Projects:
-${PROJECTS.map(p => `- ${p.title}: ${p.description}`).join('\n')}
-
-Availability: Samuel is currently open for new projects. Users can book a call or email him at ${PROFILE.links.email}.
-`;
+const HINT_PHRASES = [
+  "Is Samuel free for a meeting?",
+  "Tell me about MoniPay.",
+  "Download Samuel's Resume.",
+  "What is your tech stack?",
+  "Explain the Gasless Relayer."
+];
 
 const LoadingDots = () => (
   <motion.div className="flex space-x-1">
@@ -42,20 +37,66 @@ const LoadingDots = () => (
   </motion.div>
 );
 
+// Typewriter component for Assistant messages
+const TypewriterText: React.FC<{ text: string; onComplete?: () => void }> = ({ text, onComplete }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  
+  useEffect(() => {
+    let index = 0;
+    // Faster speed (~15ms) for "High-Speed Data Synthesis" feel
+    const timer = setInterval(() => {
+      if (index < text.length) {
+        setDisplayedText((prev) => prev + text.charAt(index));
+        index++;
+      } else {
+        clearInterval(timer);
+        if (onComplete) onComplete();
+      }
+    }, 15);
+
+    return () => clearInterval(timer);
+  }, [text, onComplete]);
+
+  return <span>{displayedText}</span>;
+};
+
 export const AIChat: React.FC = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', text: "Hello! I'm Samuel's virtual assistant. Ask me anything about his projects, skills, or availability." }
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Auto-scroll to bottom
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, isLoading]);
+
+  // Rotate Placeholders
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % HINT_PHRASES.length);
+    }, 3000); // Rotate every 3 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   const getMockResponse = (query: string): string => {
     const lowerQuery = query.toLowerCase();
+
+    // Check for specific hints
+    if (lowerQuery.includes('gasless relayer') || lowerQuery.includes('invisible wallet')) {
+      return "The Gasless Relayer is a proprietary infrastructure component in MoniPay. It abstracts gas fees for merchants, allowing them to process crypto transactions without holding ETH/BASE for fees. Combined with the 'Invisible Wallet' monitag architecture, it uses local AES-GCM encryption to securely manage session keys directly on the device.";
+    }
+
+    if (lowerQuery.includes('resume') || lowerQuery.includes('cv')) {
+      return "You can download Samuel's Resume directly. (Simulating download...) For now, please check his LinkedIn profile in the Identity card for the full work history.";
+    }
+
+    if (lowerQuery.includes('meeting') || lowerQuery.includes('calendar') || lowerQuery.includes('book')) {
+      return "Samuel is currently open for meetings! Please use the Availability card (bottom right) to book a slot via Google Calendar integration.";
+    }
 
     // Check for project keywords
     for (const project of PROJECTS) {
@@ -69,7 +110,7 @@ export const AIChat: React.FC = () => {
       return "Samuel is proficient in a modern web3 stack including React, TypeScript, Solidity, and Rust. He's also experienced with Supabase for backends and Google Cloud for infrastructure.";
     }
 
-    // Check for contact/availability
+    // Check for contact/availability (general)
     if (lowerQuery.includes('contact') || lowerQuery.includes('email') || lowerQuery.includes('available')) {
       return `He is! You can reach him at ${PROFILE.links.email} to discuss new opportunities.`;
     }
@@ -92,7 +133,7 @@ export const AIChat: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1200)); // Simulate thinking
+      await new Promise(resolve => setTimeout(resolve, 800)); // Shorter think time for snappier feel
       const responseText = getMockResponse(userMessage);
       setMessages(prev => [...prev, { role: 'assistant', text: responseText }]);
     } catch (error) {
@@ -120,7 +161,11 @@ export const AIChat: React.FC = () => {
                 className={`max-w-[80%] p-3 rounded-lg border-2 border-black shadow-hard-pressed font-body text-base leading-snug
                 ${msg.role === 'assistant' ? 'bg-white rounded-tl-none' : 'bg-blue-50 rounded-tr-none'}`}
               >
-                {msg.text}
+                {msg.role === 'assistant' ? (
+                  <TypewriterText text={msg.text} />
+                ) : (
+                  msg.text
+                )}
               </div>
             </div>
           ))}
@@ -144,8 +189,8 @@ export const AIChat: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Ask about my projects..."
-              className="flex-1 bg-white border-2 border-black rounded-lg px-4 py-2 font-body focus:outline-none focus:ring-2 focus:ring-black focus:shadow-hard-pressed transition-shadow placeholder:text-gray-400"
+              placeholder={HINT_PHRASES[placeholderIndex]}
+              className="flex-1 bg-white border-2 border-black rounded-lg px-4 py-2 font-body focus:outline-none focus:ring-2 focus:ring-black focus:shadow-hard-pressed transition-all placeholder:text-gray-400 placeholder:italic"
             />
             <button
               onClick={handleSend}

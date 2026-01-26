@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from './Card';
 import { PROFILE } from '../data';
 import { Github, Twitter, Mail, Linkedin, Book } from 'lucide-react';
 import { SiTelegram, SiDiscord } from 'react-icons/si';
 
 export const IdentityCard: React.FC = () => {
+  const [text, setText] = useState('');
+  const fullText = "Hello! I'm Samuel.";
+
+  useEffect(() => {
+    let currentIndex = 0;
+    const intervalId = setInterval(() => {
+      if (currentIndex <= fullText.length) {
+        setText(fullText.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        clearInterval(intervalId);
+      }
+    }, 100); // Speed of typing
+
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <Card className="h-full" title="Identity">
       <div className="flex flex-col h-full items-center text-center">
@@ -16,10 +33,13 @@ export const IdentityCard: React.FC = () => {
           />
         </div>
         
-        <h1 className="font-display text-4xl mb-2">{PROFILE.name}</h1>
-        <h2 className="font-body text-xl text-gray-600 mb-6 border-b-2 border-dashed border-gray-300 pb-2 w-full">
-          {PROFILE.role}
-        </h2>
+        {/* Typewriter Header */}
+        <div className="mb-6 h-16 flex items-center justify-center">
+          <h1 className="font-display text-4xl leading-tight">
+            {text}
+            <span className="inline-block w-3 h-8 bg-black animate-pulse align-middle ml-1" />
+          </h1>
+        </div>
         
         <p className="font-body text-lg leading-relaxed mb-auto text-left">
           {PROFILE.bio}
