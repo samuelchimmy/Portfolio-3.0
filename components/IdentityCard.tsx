@@ -1,0 +1,94 @@
+import React from 'react';
+import { Card } from './Card';
+import { PROFILE } from '../data';
+import { Github, Twitter, Mail, Linkedin, Book } from 'lucide-react';
+import { SiTelegram, SiDiscord } from 'react-icons/si';
+
+export const IdentityCard: React.FC = () => {
+  return (
+    <Card className="h-full" title="Identity">
+      <div className="flex flex-col h-full items-center text-center">
+        <div className="w-32 h-32 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden mb-6">
+          <img 
+            src={PROFILE.photoUrl} 
+            alt={PROFILE.name} 
+            className="w-full h-full object-cover"
+          />
+        </div>
+        
+        <h1 className="font-display text-4xl mb-2">{PROFILE.name}</h1>
+        <h2 className="font-body text-xl text-gray-600 mb-6 border-b-2 border-dashed border-gray-300 pb-2 w-full">
+          {PROFILE.role}
+        </h2>
+        
+        <p className="font-body text-lg leading-relaxed mb-auto text-left">
+          {PROFILE.bio}
+        </p>
+
+        <div className="flex gap-3 mt-8 w-full justify-center flex-wrap">
+          <a 
+            href={PROFILE.links.github} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            aria-label="GitHub Profile"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <Github size={18} />
+          </a>
+          <a 
+            href={PROFILE.links.x} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            aria-label="Twitter Profile"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <Twitter size={18} />
+          </a>
+          <a 
+            href={PROFILE.links.linkedin} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            aria-label="LinkedIn Profile"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <Linkedin size={18} />
+          </a>
+          <a 
+            href={PROFILE.links.telegram} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            aria-label="Telegram Profile"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <SiTelegram size={18} />
+          </a>
+          <a 
+            href={PROFILE.links.discord} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            aria-label="Discord Profile"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <SiDiscord size={18} />
+          </a>
+          <a 
+            href={PROFILE.links.blog} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            aria-label="Blog"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <Book size={18} />
+          </a>
+          <a 
+            href={`mailto:${PROFILE.links.email}`}
+            aria-label="Email"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <Mail size={18} />
+          </a>
+        </div>
+      </div>
+    </Card>
+  );
+};
