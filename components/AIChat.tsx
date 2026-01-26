@@ -37,13 +37,11 @@ const LoadingDots = () => (
   </motion.div>
 );
 
-// Typewriter component for Assistant messages
 const TypewriterText: React.FC<{ text: string; onComplete?: () => void }> = ({ text, onComplete }) => {
   const [displayedText, setDisplayedText] = useState('');
   
   useEffect(() => {
     let index = 0;
-    // Faster speed (~15ms) for "High-Speed Data Synthesis" feel
     const timer = setInterval(() => {
       if (index < text.length) {
         setDisplayedText((prev) => prev + text.charAt(index));
@@ -66,74 +64,88 @@ export const AIChat: React.FC = () => {
     { role: 'assistant', text: "Hello! I'm Samuel's virtual assistant. Ask me anything about his projects, skills, or availability." }
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // State for placeholder typewriter effect
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [currentPlaceholder, setCurrentPlaceholder] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  // Rotate Placeholders
+  // Typewriter logic for placeholder
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPlaceholderIndex((prev) => (prev + 1) % HINT_PHRASES.length);
-    }, 3000); // Rotate every 3 seconds
-    return () => clearInterval(interval);
-  }, []);
+    const currentHint = HINT_PHRASES[placeholderIndex];
+    let timeoutId: number;
+
+    if (isDeleting) {
+      // Deleting text
+      if (currentPlaceholder.length > 0) {
+        timeoutId = window.setTimeout(() => {
+          setCurrentPlaceholder(currentPlaceholder.slice(0, -1));
+        }, 50); // Faster delete speed
+      } else {
+        setIsDeleting(false);
+        setPlaceholderIndex((prev) => (prev + 1) % HINT_PHRASES.length);
+      }
+    } else {
+      // Typing text
+      if (currentPlaceholder.length < currentHint.length) {
+        timeoutId = window.setTimeout(() => {
+          setCurrentPlaceholder(currentHint.slice(0, currentPlaceholder.length + 1));
+        }, 100); // Faster typing speed
+      } else {
+        // Pause before deleting
+        timeoutId = window.setTimeout(() => {
+          setIsDeleting(true);
+        }, 2000); // Pause for 2s
+      }
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [currentPlaceholder, isDeleting, placeholderIndex]);
 
   const getMockResponse = (query: string): string => {
     const lowerQuery = query.toLowerCase();
 
-    // Check for specific hints
     if (lowerQuery.includes('gasless relayer') || lowerQuery.includes('invisible wallet')) {
       return "The Gasless Relayer is a proprietary infrastructure component in MoniPay. It abstracts gas fees for merchants, allowing them to process crypto transactions without holding ETH/BASE for fees. Combined with the 'Invisible Wallet' monitag architecture, it uses local AES-GCM encryption to securely manage session keys directly on the device.";
     }
-
     if (lowerQuery.includes('resume') || lowerQuery.includes('cv')) {
       return "You can download Samuel's Resume directly. (Simulating download...) For now, please check his LinkedIn profile in the Identity card for the full work history.";
     }
-
     if (lowerQuery.includes('meeting') || lowerQuery.includes('calendar') || lowerQuery.includes('book')) {
       return "Samuel is currently open for meetings! Please use the Availability card (bottom right) to book a slot via Google Calendar integration.";
     }
-
-    // Check for project keywords
     for (const project of PROJECTS) {
       if (lowerQuery.includes(project.title.toLowerCase())) {
         return `Ah, ${project.title}! It's a project where Samuel worked on ${project.description}. The tech stack included ${project.stack.join(', ')}. It's currently ${project.status}.`;
       }
     }
-    
-    // Check for skill keywords
     if (lowerQuery.includes('skill') || lowerQuery.includes('stack') || lowerQuery.includes('tech')) {
       return "Samuel is proficient in a modern web3 stack including React, TypeScript, Solidity, and Rust. He's also experienced with Supabase for backends and Google Cloud for infrastructure.";
     }
-
-    // Check for contact/availability (general)
     if (lowerQuery.includes('contact') || lowerQuery.includes('email') || lowerQuery.includes('available')) {
       return `He is! You can reach him at ${PROFILE.links.email} to discuss new opportunities.`;
     }
-    
-    // Check for greeting
     if (lowerQuery.includes('hello') || lowerQuery.includes('hi')) {
         return "Hello there! How can I help you learn more about Samuel's work?";
     }
-
-    // Fallback response
     return "That's a great question. I can tell you about specific projects like MoniPay or BaseStory, or his overall skillset. What are you most interested in?";
   };
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
-
     const userMessage = input;
     setInput('');
     setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 800)); // Shorter think time for snappier feel
+      await new Promise(resolve => setTimeout(resolve, 800));
       const responseText = getMockResponse(userMessage);
       setMessages(prev => [...prev, { role: 'assistant', text: responseText }]);
     } catch (error) {
@@ -146,8 +158,6 @@ export const AIChat: React.FC = () => {
   return (
     <Card className="h-full flex flex-col" title="AI Assistant (Gemini 1.5 Flash)" noPadding>
       <div className="flex flex-col h-full bg-[#F9FAFB]">
-        
-        {/* Chat Area */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[300px] lg:max-h-none no-scrollbar">
           {messages.map((msg, idx) => (
             <div 
@@ -161,11 +171,7 @@ export const AIChat: React.FC = () => {
                 className={`max-w-[80%] p-3 rounded-lg border-2 border-black shadow-hard-pressed font-body text-base leading-snug
                 ${msg.role === 'assistant' ? 'bg-white rounded-tl-none' : 'bg-blue-50 rounded-tr-none'}`}
               >
-                {msg.role === 'assistant' ? (
-                  <TypewriterText text={msg.text} />
-                ) : (
-                  msg.text
-                )}
+                {msg.role === 'assistant' ? <TypewriterText text={msg.text} /> : msg.text}
               </div>
             </div>
           ))}
@@ -180,8 +186,6 @@ export const AIChat: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* Input Area */}
         <div className="p-3 border-t-2 border-black bg-gray-50">
           <div className="flex gap-2">
             <input
@@ -189,7 +193,7 @@ export const AIChat: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder={HINT_PHRASES[placeholderIndex]}
+              placeholder={currentPlaceholder}
               className="flex-1 bg-white border-2 border-black rounded-lg px-4 py-2 font-body focus:outline-none focus:ring-2 focus:ring-black focus:shadow-hard-pressed transition-all placeholder:text-gray-400 placeholder:italic"
             />
             <button

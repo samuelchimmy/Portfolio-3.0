@@ -22,7 +22,7 @@ import { VscTerminalCmd } from 'react-icons/vsc';
 export const PROFILE = {
   name: "Samuel",
   role: "Product Engineer",
-  bio: "Full-Stack web3 Developer with 5+ years of experience. I specialize in building decentralized systems and web applications using React, TypeScript, and solidity. I focus on creating fast, easy-to-use software that solves real problems.",
+  bio: "Full-stack Web3 developer with over five years of experience architecting decentralized systems and scalable web applications. My work centers on React, TypeScript, and Solidity, with an emphasis on performance, reliability, inclusive design and real-world usability.",
   links: {
     github: "https://github.com/samuelchimmy",
     x: "https://x.com/WallstreetJade",
@@ -47,7 +47,7 @@ export interface Project {
 export const PROJECTS: Project[] = [
   {
     title: "MoniPay",
-    description: "Decentralized SoftPOS protocol on Base replacing hardware terminals. Features a proprietary Gasless Relayer and 'Invisible Wallet' monitag architecture using local AES-GCM encryption.",
+    description: "Decentralized SoftPOS protocol on Base replacing hardware terminals. Features a proprietary Gasless Relayer and 'Invisible Wallet' monitag architecture.",
     stack: ["React", "Base", "Solidity", "Supabase", "CapacitorJS"],
     color: "#0052FF",
     url: "https://monipay.xyz",

@@ -35,9 +35,9 @@ export const IdentityCard: React.FC = () => {
         
         {/* Typewriter Header */}
         <div className="mb-6 h-16 flex items-center justify-center">
-          <h1 className="font-display text-4xl leading-tight">
+          <h1 className="font-display text-2xl leading-tight">
             {text}
-            <span className="inline-block w-3 h-8 bg-black animate-pulse align-middle ml-1" />
+            <span className="inline-block w-1 h-8 bg-black animate-blink align-middle ml-1" />
           </h1>
         </div>
         

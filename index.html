@@ -36,6 +36,14 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
+      
+      /* Custom blink animation for typewriter cursor */
+      @keyframes blink {
+        50% { opacity: 0; }
+      }
+      .animate-blink {
+        animation: blink 1s step-end infinite;
+      }
     </style>
   <script type="importmap">
 {

@@ -13,7 +13,7 @@ interface CardProps {
 export const Card: React.FC<CardProps> = ({ children, className, title, noPadding = false, onClick }) => {
   return (
     <motion.div
-      whileHover={{ x: 2, y: 2, boxShadow: '2px 2px 0px 0px rgba(0,0,0,1)' }}
+      whileHover={{ scale: 1.01, boxShadow: '8px 8px 0px 0px rgba(0,0,0,1)' }}
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
       onClick={onClick}
       className={clsx(
