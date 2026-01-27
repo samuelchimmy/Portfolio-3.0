@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Card } from './Card';
-import { Send, Bot, User, CheckCircle, Loader2, Download } from 'lucide-react';
+import { Send, Bot, User, CheckCircle, Loader2, Download, Sun, Moon } from 'lucide-react';
 import { PROJECTS, PROFILE, Project } from '../data';
 import { GoogleGenAI, Chat, FunctionDeclaration, Type, Tool, Part } from "@google/genai";
+import { useTheme } from './ThemeContext';
 
 // Shared Backend URL
 const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzA6KW-e43M3uT57G4O5aCCRDAE9m4oUChTuW0vbWDJaPt0MNn_EvJ2vT5ROTauqSmQ/exec";
@@ -75,6 +76,7 @@ const tools: Tool[] = [{
 // --- COMPONENT ---
 
 export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
+  const { theme, toggleTheme } = useTheme();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', text: "Hello! I'm Samuel's AI agent. I can answer questions about his work or help you book a meeting directly in this chat." }
@@ -331,7 +333,22 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
   };
 
   return (
-    <Card id="ai-assistant-card" className="h-full flex flex-col overflow-hidden" title="AI Executive Assistant" noPadding>
+    <Card 
+      id="ai-assistant-card" 
+      className="h-full flex flex-col overflow-hidden" 
+      title="AI Executive Assistant" 
+      noPadding
+      headerRight={
+        <button
+          onClick={toggleTheme}
+          className="p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/60 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+          title="Toggle Theme"
+          aria-label="Toggle Theme"
+        >
+          {theme === 'light' ? <Moon size={14} /> : <Sun size={14} />}
+        </button>
+      }
+    >
       <div className="flex flex-col h-full bg-white dark:bg-zinc-900 transition-colors duration-300">
         {/* Chat Area */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar min-h-0">

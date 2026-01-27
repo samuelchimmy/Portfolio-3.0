@@ -9,9 +9,10 @@ interface CardProps {
   noPadding?: boolean;
   onClick?: () => void;
   id?: string;
+  headerRight?: React.ReactNode;
 }
 
-export const Card: React.FC<CardProps> = ({ children, className, title, noPadding = false, onClick, id }) => {
+export const Card: React.FC<CardProps> = ({ children, className, title, noPadding = false, onClick, id, headerRight }) => {
   return (
     <motion.div
       id={id}
@@ -37,7 +38,12 @@ export const Card: React.FC<CardProps> = ({ children, className, title, noPaddin
             {title}
           </span>
         )}
-        <div className="w-8" /> {/* Spacer for centering */}
+        {/* Render headerRight if present, otherwise a spacer for centering balance */}
+        {headerRight ? (
+          <div className="flex items-center">{headerRight}</div>
+        ) : (
+          <div className="w-8" />
+        )}
       </div>
 
       {/* Content */}
