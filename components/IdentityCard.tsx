@@ -25,7 +25,7 @@ export const IdentityCard: React.FC = () => {
   return (
     <Card id="identity-card" className="h-full" title="Identity">
       <div className="flex flex-col h-full items-center text-center">
-        <div className="w-32 h-32 rounded-full border-2 border-black shadow-[2px_2px_2px_rgba(0,0,0,0.15)] overflow-hidden mb-6">
+        <div className="w-32 h-32 rounded-full border-2 border-black dark:border-zinc-300 shadow-[2px_2px_2px_rgba(0,0,0,0.15)] overflow-hidden mb-6 transition-colors">
           <img 
             src={PROFILE.photoUrl} 
             alt={PROFILE.name} 
@@ -35,13 +35,13 @@ export const IdentityCard: React.FC = () => {
         
         {/* Typewriter Header */}
         <div className="mb-6 h-16 flex items-center justify-center">
-          <h1 className="font-display text-2xl leading-tight">
+          <h1 className="font-display text-2xl leading-tight dark:text-white">
             {text}
-            <span className="inline-block w-1 h-8 bg-black animate-blink align-middle ml-1" />
+            <span className="inline-block w-1 h-8 bg-black dark:bg-white animate-blink align-middle ml-1" />
           </h1>
         </div>
         
-        <p className="font-body text-lg leading-relaxed mb-auto text-left">
+        <p className="font-body text-lg leading-relaxed mb-auto text-left dark:text-zinc-200">
           {PROFILE.bio}
         </p>
 
@@ -51,7 +51,7 @@ export const IdentityCard: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="GitHub Profile"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
+            className="p-2.5 border-2 border-black dark:border-zinc-400 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none dark:text-white"
           >
             <Github size={18} />
           </a>
@@ -60,7 +60,7 @@ export const IdentityCard: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="Twitter Profile"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
+            className="p-2.5 border-2 border-black dark:border-zinc-400 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none dark:text-white"
           >
             <Twitter size={18} />
           </a>
@@ -69,7 +69,7 @@ export const IdentityCard: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="LinkedIn Profile"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
+            className="p-2.5 border-2 border-black dark:border-zinc-400 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none dark:text-white"
           >
             <Linkedin size={18} />
           </a>
@@ -78,7 +78,7 @@ export const IdentityCard: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="Telegram Profile"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
+            className="p-2.5 border-2 border-black dark:border-zinc-400 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none dark:text-white"
           >
             <SiTelegram size={18} />
           </a>
@@ -87,7 +87,7 @@ export const IdentityCard: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="Discord Profile"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
+            className="p-2.5 border-2 border-black dark:border-zinc-400 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none dark:text-white"
           >
             <SiDiscord size={18} />
           </a>
@@ -96,14 +96,14 @@ export const IdentityCard: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="Blog"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
+            className="p-2.5 border-2 border-black dark:border-zinc-400 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none dark:text-white"
           >
             <Book size={18} />
           </a>
           <a 
             href={`mailto:${PROFILE.links.email}`}
             aria-label="Email"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
+            className="p-2.5 border-2 border-black dark:border-zinc-400 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none dark:text-white"
           >
             <Mail size={18} />
           </a>

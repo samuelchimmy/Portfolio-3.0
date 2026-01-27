@@ -29,6 +29,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             colors: {
@@ -80,7 +81,7 @@
 }
 </script>
 </head>
-  <body class="bg-[#F3F4F6] text-black font-body antialiased selection:bg-black selection:text-white">
+  <body class="bg-[#F3F4F6] text-black dark:bg-zinc-950 dark:text-zinc-100 font-body antialiased selection:bg-black selection:text-white transition-colors duration-300">
     <div id="root"></div>
   </body>
 </html>

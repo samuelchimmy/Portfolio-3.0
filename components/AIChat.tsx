@@ -332,35 +332,35 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
 
   return (
     <Card id="ai-assistant-card" className="h-full flex flex-col overflow-hidden" title="AI Executive Assistant" noPadding>
-      <div className="flex flex-col h-full bg-white">
+      <div className="flex flex-col h-full bg-white dark:bg-zinc-900 transition-colors duration-300">
         {/* Chat Area */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar min-h-0">
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex flex-col gap-2`}>
               {msg.type === 'success-card' ? (
-                // Success Card - Emerald Green, aligned, compact
-                <div className="mr-auto w-fit max-w-[85%] bg-emerald-50 border border-emerald-200 rounded-lg rounded-tl-none p-3 shadow-hard-pressed">
-                  <div className="flex items-center gap-2 text-emerald-800 font-display text-sm mb-1.5">
+                // Success Card - Emerald Green
+                <div className="mr-auto w-fit max-w-[85%] bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 rounded-lg rounded-tl-none p-3 shadow-hard-pressed">
+                  <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-400 font-display text-sm mb-1.5">
                     <CheckCircle size={16} />
                     <span>Booking Confirmed</span>
                   </div>
-                  <div className="text-xs font-body text-emerald-900 space-y-0.5">
+                  <div className="text-xs font-body text-emerald-900 dark:text-emerald-200 space-y-0.5">
                     <p><strong>Date:</strong> {msg.bookingDetails.date}</p>
                     <p><strong>Time:</strong> {msg.bookingDetails.time}</p>
                     <p><strong>Duration:</strong> {msg.bookingDetails.duration} mins</p>
                   </div>
                 </div>
               ) : msg.type === 'resume-card' ? (
-                // Resume Card - Emerald Green, aligned, compact
-                <div className="mr-auto w-fit max-w-[85%] bg-emerald-50 border border-emerald-200 rounded-lg rounded-tl-none p-3 shadow-hard-pressed">
+                // Resume Card - Emerald Green
+                <div className="mr-auto w-fit max-w-[85%] bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 rounded-lg rounded-tl-none p-3 shadow-hard-pressed">
                   <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-emerald-200 rounded-full border border-emerald-300">
-                              <Download className="text-emerald-800" size={14} />
+                          <div className="p-1.5 bg-emerald-200 dark:bg-emerald-800 rounded-full border border-emerald-300 dark:border-emerald-700">
+                              <Download className="text-emerald-800 dark:text-emerald-200" size={14} />
                           </div>
                           <div className="flex flex-col">
-                              <span className="font-display text-sm text-emerald-900 leading-none">Samuel's Resume</span>
-                              <span className="text-[9px] uppercase font-bold text-emerald-600 tracking-wider">PDF Document</span>
+                              <span className="font-display text-sm text-emerald-900 dark:text-emerald-200 leading-none">Samuel's Resume</span>
+                              <span className="text-[9px] uppercase font-bold text-emerald-600 dark:text-emerald-400 tracking-wider">PDF Document</span>
                           </div>
                       </div>
                       <a 
@@ -368,7 +368,7 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
                           download="Samuel_Chiedozie_Resume.pdf"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="px-2 py-1 bg-emerald-600 text-white rounded-md font-bold text-[10px] shadow-sm hover:bg-emerald-700 transition-colors flex items-center gap-1 whitespace-nowrap"
+                          className="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md font-bold text-[10px] shadow-sm transition-colors flex items-center gap-1 whitespace-nowrap"
                       >
                           Download
                       </a>
@@ -377,12 +377,14 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
               ) : (
                 // Standard Chat Bubbles
                 <div className={`flex items-start gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`w-8 h-8 rounded-full border-2 border-black flex items-center justify-center shrink-0 ${msg.role === 'assistant' ? 'bg-yellow-200' : 'bg-blue-200'} shadow-hard-pressed`}>
+                  <div className={`w-8 h-8 rounded-full border-2 border-black dark:border-zinc-500 flex items-center justify-center shrink-0 ${msg.role === 'assistant' ? 'bg-yellow-200 dark:bg-yellow-600' : 'bg-blue-200 dark:bg-blue-600'} shadow-hard-pressed text-black dark:text-white`}>
                     {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
                   </div>
                   <div 
-                    className={`max-w-[85%] p-3 rounded-lg border-2 border-black shadow-hard-pressed font-body text-base leading-snug backdrop-blur-md
-                    ${msg.role === 'assistant' ? 'bg-white/90 rounded-tl-none' : 'bg-blue-50/90 rounded-tr-none'}`}
+                    className={`max-w-[85%] p-3 rounded-lg border-2 border-black dark:border-zinc-600 shadow-hard-pressed font-body text-base leading-snug backdrop-blur-md
+                    ${msg.role === 'assistant' 
+                      ? 'bg-white/90 dark:bg-zinc-800/90 rounded-tl-none text-black dark:text-zinc-100' 
+                      : 'bg-blue-50/90 dark:bg-blue-900/40 rounded-tr-none text-black dark:text-zinc-100'}`}
                   >
                     {msg.text}
                   </div>
@@ -393,7 +395,7 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
           
           {/* Status Indicator */}
           {(isTyping || toolStatus) && (
-            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 ml-12 animate-pulse">
+            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 dark:text-gray-400 ml-12 animate-pulse">
                {toolStatus ? (
                  <>
                    <Loader2 size={12} className="animate-spin" />
@@ -407,7 +409,7 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
         </div>
 
         {/* Input Area */}
-        <div className="p-3 border-t-2 border-black bg-gray-50/90 backdrop-blur-md">
+        <div className="p-3 border-t-2 border-black dark:border-zinc-400 bg-gray-50/90 dark:bg-zinc-800/90 backdrop-blur-md transition-colors">
           <div className="flex gap-2">
             <input
               type="text"
@@ -416,12 +418,12 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder={currentPlaceholder}
               disabled={isTyping}
-              className="flex-1 bg-white border-2 border-black rounded-lg px-4 py-2 font-body focus:outline-none focus:ring-2 focus:ring-black focus:shadow-hard-pressed transition-all placeholder:text-gray-400 placeholder:italic disabled:bg-gray-100 disabled:text-gray-400"
+              className="flex-1 bg-white dark:bg-zinc-900 border-2 border-black dark:border-zinc-500 rounded-lg px-4 py-2 font-body text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-zinc-400 focus:shadow-hard-pressed transition-all placeholder:text-gray-400 disabled:bg-gray-100 dark:disabled:bg-zinc-800 disabled:text-gray-400"
             />
             <button
               onClick={handleSend}
               disabled={isTyping || !input.trim()}
-              className="p-2 bg-black text-white rounded-lg border-2 border-black shadow-hard hover:bg-gray-800 active:translate-y-px active:shadow-hard-pressed transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 bg-black dark:bg-white text-white dark:text-black rounded-lg border-2 border-black dark:border-zinc-300 shadow-hard hover:bg-gray-800 dark:hover:bg-gray-200 active:translate-y-px active:shadow-hard-pressed transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send size={20} />
             </button>

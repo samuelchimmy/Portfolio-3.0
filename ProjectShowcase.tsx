@@ -72,18 +72,18 @@ export const ProjectShowcase: React.FC<ProjectShowcaseProps> = ({ currentIndex, 
 
   return (
     <Card className="h-full relative group" title={`Showcase (${currentIndex + 1}/${PROJECTS.length})`} noPadding>
-      <div className="h-full flex flex-col relative overflow-hidden bg-white">
+      <div className="h-full flex flex-col relative overflow-hidden bg-white dark:bg-zinc-900 transition-colors duration-300">
         
         {/* Navigation Buttons */}
         <button 
           onClick={prevProject}
-          className="absolute left-1 top-1/2 -translate-y-1/2 z-20 p-2 text-black/40 hover:text-black transition-colors focus:outline-none"
+          className="absolute left-1 top-1/2 -translate-y-1/2 z-20 p-2 text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors focus:outline-none"
         >
           <ChevronLeft size={32} strokeWidth={1.5} />
         </button>
         <button 
           onClick={nextProject}
-          className="absolute right-1 top-1/2 -translate-y-1/2 z-20 p-2 text-black/40 hover:text-black transition-colors focus:outline-none"
+          className="absolute right-1 top-1/2 -translate-y-1/2 z-20 p-2 text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors focus:outline-none"
         >
           <ChevronRight size={32} strokeWidth={1.5} />
         </button>
@@ -104,21 +104,23 @@ export const ProjectShowcase: React.FC<ProjectShowcaseProps> = ({ currentIndex, 
                   className="font-display text-3xl md:text-4xl"
                   style={{ color: project.color }}
                 >
-                  {project.title}
+                  <span className={clsx("dark:text-white", project.color === '#000000' && "dark:text-white")}>
+                    {project.title}
+                  </span>
                 </h3>
                 <StatusBadge status={project.status} />
                 <a 
                   href={project.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-black transition-colors ml-2"
+                  className="text-gray-400 hover:text-black dark:hover:text-white transition-colors ml-2"
                 >
                   <ExternalLink size={16} />
                 </a>
               </div>
 
               {/* Description */}
-              <p className="font-body text-lg md:text-xl text-gray-700 leading-snug md:leading-relaxed mb-6">
+              <p className="font-body text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-snug md:leading-relaxed mb-6">
                 {project.description}
               </p>
 
@@ -129,7 +131,7 @@ export const ProjectShowcase: React.FC<ProjectShowcaseProps> = ({ currentIndex, 
                   return (
                   <span 
                     key={tech} 
-                    className="flex items-center gap-1 px-1.5 py-0.5 border border-black rounded-full text-[9px] md:text-xs font-bold bg-white shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)] whitespace-nowrap"
+                    className="flex items-center gap-1 px-1.5 py-0.5 border border-black dark:border-zinc-500 rounded-full text-[9px] md:text-xs font-bold bg-white dark:bg-zinc-800 dark:text-zinc-200 shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)] whitespace-nowrap"
                   >
                     {Icon && <Icon className="text-xs md:text-sm" />}
                     {tech}
@@ -139,17 +141,17 @@ export const ProjectShowcase: React.FC<ProjectShowcaseProps> = ({ currentIndex, 
                 {/* Like Button */}
                 <button 
                   onClick={toggleLike}
-                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-full hover:bg-gray-100 transition-colors group/heart"
+                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors group/heart"
                   aria-label={isLiked ? "Unlike project" : "Like project"}
                 >
                   <Heart 
                     size={20} 
                     className={clsx(
                       "transition-all duration-300", 
-                      isLiked ? "fill-red-500 text-red-500 scale-110" : "text-gray-400 group-hover/heart:text-red-400"
+                      isLiked ? "fill-red-500 text-red-500 scale-110" : "text-gray-400 dark:text-gray-500 group-hover/heart:text-red-400"
                     )}
                   />
-                  <span className={clsx("font-body text-sm font-bold transition-colors", isLiked ? "text-red-600" : "text-gray-500")}>
+                  <span className={clsx("font-body text-sm font-bold transition-colors", isLiked ? "text-red-600 dark:text-red-400" : "text-gray-500 dark:text-gray-400")}>
                     {likes}
                   </span>
                 </button>

@@ -33,15 +33,15 @@ const allDayTimeSlots = generateTimeSlots();
 type View = 'calendar' | 'time' | 'form' | 'success' | 'setup_needed';
 
 const SetupNeededView: React.FC = () => (
-    <div className="p-6 flex flex-col items-center justify-center h-full text-center">
-        <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-3">
-            <AlertCircle className="text-yellow-600" size={24} />
+    <div className="p-6 flex flex-col items-center justify-center h-full text-center text-black dark:text-white">
+        <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/40 rounded-full flex items-center justify-center mb-3">
+            <AlertCircle className="text-yellow-600 dark:text-yellow-400" size={24} />
         </div>
         <h3 className="font-display text-lg mb-2">Setup Required</h3>
-        <p className="text-xs text-gray-600 mb-4">
+        <p className="text-xs text-gray-600 dark:text-gray-300 mb-4">
             The calendar backend is not connected. 
         </p>
-        <div className="text-[10px] text-left bg-gray-100 p-3 rounded border border-gray-200 w-full font-mono">
+        <div className="text-[10px] text-left bg-gray-100 dark:bg-zinc-800 p-3 rounded border border-gray-200 dark:border-zinc-700 w-full font-mono">
             Ensure BACKEND_URL in components/Availability.tsx points to the Google Apps Script Web App URL.
         </div>
     </div>
@@ -93,18 +93,18 @@ const CalendarView: React.FC<{
     const paddingDays = Array.from({ length: startingDay }, () => null);
 
     return (
-        <div className="p-2 flex flex-col h-full relative">
+        <div className="p-2 flex flex-col h-full relative text-black dark:text-white">
             {isLoading && (
-                 <div className="absolute inset-0 bg-white/80 z-20 flex items-center justify-center">
-                    <Loader2 className="animate-spin text-black" size={24} />
+                 <div className="absolute inset-0 bg-white/80 dark:bg-zinc-900/80 z-20 flex items-center justify-center">
+                    <Loader2 className="animate-spin text-black dark:text-white" size={24} />
                  </div>
             )}
             <div className="flex justify-between items-center mb-1 md:mb-2 shrink-0">
-                <button onClick={handlePrevMonth} className="p-1 rounded-md hover:bg-gray-100 transition-colors"><ChevronLeft size={14} className="md:w-4 md:h-4" /></button>
+                <button onClick={handlePrevMonth} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"><ChevronLeft size={14} className="md:w-4 md:h-4" /></button>
                 <h3 className="font-display text-xs md:text-sm tracking-wide">{currentDate.toLocaleString('default', { month: 'long' })} {currentDate.getFullYear()}</h3>
-                <button onClick={handleNextMonth} className="p-1 rounded-md hover:bg-gray-100 transition-colors"><ChevronRight size={14} className="md:w-4 md:h-4" /></button>
+                <button onClick={handleNextMonth} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"><ChevronRight size={14} className="md:w-4 md:h-4" /></button>
             </div>
-            <div className="grid grid-cols-7 text-center text-[8px] md:text-[10px] font-bold text-gray-500 mb-0.5 md:mb-1 shrink-0">
+            <div className="grid grid-cols-7 text-center text-[8px] md:text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-0.5 md:mb-1 shrink-0">
                 {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => <div key={d}>{d}</div>)}
             </div>
             
@@ -127,12 +127,12 @@ const CalendarView: React.FC<{
                             className={clsx(
                                 'w-full h-full flex items-center justify-center text-[10px] md:text-[11px] font-bold transition-all shadow-sm rounded-sm md:rounded-md',
                                 {
-                                    'text-gray-300 bg-transparent': status === 'past',
+                                    'text-gray-300 dark:text-gray-600 bg-transparent': status === 'past',
                                     'bg-red-500 text-white': status === 'sunday',
                                     'bg-yellow-500 text-white': status === 'unavailable',
-                                    'bg-green-600 text-white hover:bg-green-700': status === 'available',
-                                    'bg-gray-200 text-gray-500': status === 'loading',
-                                    'ring-1 md:ring-2 ring-black ring-inset': isToday && status === 'available'
+                                    'bg-green-600 dark:bg-green-700 text-white hover:bg-green-700 dark:hover:bg-green-600': status === 'available',
+                                    'bg-gray-200 dark:bg-zinc-800 text-gray-500': status === 'loading',
+                                    'ring-1 md:ring-2 ring-black dark:ring-white ring-inset': isToday && status === 'available'
                                 }
                             )}
                         >
@@ -171,13 +171,13 @@ const TimeSlotView: React.FC<{
     };
 
     return (
-    <div className="p-2 flex flex-col h-full">
+    <div className="p-2 flex flex-col h-full text-black dark:text-white">
         <div className="flex items-center mb-1 shrink-0">
-            <button onClick={onBack} className="p-1 rounded-md hover:bg-gray-100 mr-1"><ArrowLeft size={14} className="md:w-4 md:h-4" /></button>
+            <button onClick={onBack} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800 mr-1"><ArrowLeft size={14} className="md:w-4 md:h-4" /></button>
             <h3 className="font-display text-xs md:text-sm tracking-wide">{selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</h3>
         </div>
         {userTimeZone && (
-            <div className="flex items-center justify-center gap-1 text-[8px] md:text-[10px] text-gray-500 mb-1 md:mb-2 font-bold shrink-0">
+            <div className="flex items-center justify-center gap-1 text-[8px] md:text-[10px] text-gray-500 dark:text-gray-400 mb-1 md:mb-2 font-bold shrink-0">
                 <Globe size={10} className="md:w-3 md:h-3"/> 
                 Times shown in {userTimeZone.replace(/_/g, ' ')}
             </div>
@@ -205,7 +205,7 @@ const TimeSlotView: React.FC<{
                             {
                                 'bg-red-500 text-white border-red-600 cursor-not-allowed opacity-50': !isWorkingHour,
                                 'bg-yellow-500 text-white border-yellow-600 cursor-not-allowed line-through': isWorkingHour && isBooked,
-                                'bg-green-600 text-white border-green-700 hover:bg-green-700': isWorkingHour && !isBooked,
+                                'bg-green-600 dark:bg-green-700 text-white border-green-700 hover:bg-green-700 dark:hover:bg-green-600': isWorkingHour && !isBooked,
                             }
                         )}
                     >
@@ -215,9 +215,9 @@ const TimeSlotView: React.FC<{
             })}
         </div>
         <div className="flex items-center justify-between mt-auto pt-1 md:pt-2 shrink-0">
-             <button onClick={() => setPage(p => p - 1)} disabled={page === 0} className="p-1 rounded-md hover:bg-gray-100 disabled:opacity-30"><ChevronLeft size={14} className="md:w-4 md:h-4" /></button>
-             <span className="text-[9px] md:text-[10px] font-bold text-gray-500">Page {page + 1} of {totalPages}</span>
-             <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages - 1} className="p-1 rounded-md hover:bg-gray-100 disabled:opacity-30"><ChevronRight size={14} className="md:w-4 md:h-4" /></button>
+             <button onClick={() => setPage(p => p - 1)} disabled={page === 0} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30"><ChevronLeft size={14} className="md:w-4 md:h-4" /></button>
+             <span className="text-[9px] md:text-[10px] font-bold text-gray-500 dark:text-gray-400">Page {page + 1} of {totalPages}</span>
+             <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages - 1} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30"><ChevronRight size={14} className="md:w-4 md:h-4" /></button>
         </div>
     </div>
     );
@@ -266,21 +266,21 @@ const BookingFormView: React.FC<{
     };
 
     return (
-        <div className="p-2 flex flex-col h-full">
+        <div className="p-2 flex flex-col h-full text-black dark:text-white">
             <div className="flex items-center mb-1 shrink-0">
-                <button onClick={onBack} className="p-1 rounded-md hover:bg-gray-100 mr-1"><ArrowLeft size={14} className="md:w-4 md:h-4" /></button>
+                <button onClick={onBack} className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800 mr-1"><ArrowLeft size={14} className="md:w-4 md:h-4" /></button>
                 <h3 className="font-display text-xs md:text-sm tracking-wide">Confirm Booking</h3>
             </div>
-            <p className="text-[9px] md:text-[10px] text-gray-600 text-center mb-1 md:mb-2 shrink-0">
+            <p className="text-[9px] md:text-[10px] text-gray-600 dark:text-gray-300 text-center mb-1 md:mb-2 shrink-0">
                 {selectedSlotUTC.toLocaleDateString([], { month: 'long', day: 'numeric', timeZone: userTimeZone })}
                 {' at '}
                 {selectedSlotUTC.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', timeZone: userTimeZone })}
             </p>
             <form onSubmit={handleSubmit} className="flex flex-col gap-1 md:gap-1.5 flex-1 min-h-0">
-                <input required name="name" type="text" placeholder="Your Name" className="w-full p-1 border border-gray-300 rounded-sm md:rounded-md text-[10px] md:text-[11px] font-body focus:ring-1 focus:ring-black outline-none" />
-                <input required name="email" type="email" placeholder="Your Email" className="w-full p-1 border border-gray-300 rounded-sm md:rounded-md text-[10px] md:text-[11px] font-body focus:ring-1 focus:ring-black outline-none" />
-                <textarea required name="purpose" placeholder="Purpose of meeting" rows={2} className="w-full p-1 border border-gray-300 rounded-sm md:rounded-md text-[10px] md:text-[11px] resize-none font-body focus:ring-1 focus:ring-black outline-none flex-1"></textarea>
-                <select required name="duration" className="w-full p-1 border border-gray-300 rounded-sm md:rounded-md text-[10px] md:text-[11px] bg-white font-body focus:ring-1 focus:ring-black outline-none shrink-0">
+                <input required name="name" type="text" placeholder="Your Name" className="w-full p-1 border border-gray-300 dark:border-zinc-600 rounded-sm md:rounded-md text-[10px] md:text-[11px] font-body bg-white dark:bg-zinc-800 text-black dark:text-white focus:ring-1 focus:ring-black dark:focus:ring-white outline-none" />
+                <input required name="email" type="email" placeholder="Your Email" className="w-full p-1 border border-gray-300 dark:border-zinc-600 rounded-sm md:rounded-md text-[10px] md:text-[11px] font-body bg-white dark:bg-zinc-800 text-black dark:text-white focus:ring-1 focus:ring-black dark:focus:ring-white outline-none" />
+                <textarea required name="purpose" placeholder="Purpose of meeting" rows={2} className="w-full p-1 border border-gray-300 dark:border-zinc-600 rounded-sm md:rounded-md text-[10px] md:text-[11px] resize-none font-body bg-white dark:bg-zinc-800 text-black dark:text-white focus:ring-1 focus:ring-black dark:focus:ring-white outline-none flex-1"></textarea>
+                <select required name="duration" className="w-full p-1 border border-gray-300 dark:border-zinc-600 rounded-sm md:rounded-md text-[10px] md:text-[11px] bg-white dark:bg-zinc-800 text-black dark:text-white font-body focus:ring-1 focus:ring-black dark:focus:ring-white outline-none shrink-0">
                     <option value="15">15 minutes</option>
                     <option value="30">30 minutes</option>
                     <option value="45">45 minutes</option>
@@ -288,7 +288,7 @@ const BookingFormView: React.FC<{
                 <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="mt-auto w-full flex items-center justify-center gap-2 px-3 py-1 bg-black text-white rounded-md font-body text-[10px] md:text-xs hover:bg-gray-800 transition-colors disabled:bg-gray-400 shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:shadow-none active:translate-y-[1px] shrink-0"
+                    className="mt-auto w-full flex items-center justify-center gap-2 px-3 py-1 bg-black dark:bg-white text-white dark:text-black rounded-md font-body text-[10px] md:text-xs hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:bg-gray-400 shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:shadow-none active:translate-y-[1px] shrink-0"
                 >
                     {isSubmitting ? 'Sending...' : 'Confirm'} <Send size={12} />
                 </button>
@@ -298,14 +298,14 @@ const BookingFormView: React.FC<{
 };
 
 const SuccessView: React.FC<{ onReset: () => void }> = ({ onReset }) => (
-    <div className="p-4 flex flex-col items-center justify-center h-full text-center">
+    <div className="p-4 flex flex-col items-center justify-center h-full text-center text-black dark:text-white">
         <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3 mx-auto">
-                <Send className="text-green-600" size={24} />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center mb-3 mx-auto">
+                <Send className="text-green-600 dark:text-green-400" size={24} />
             </div>
             <h3 className="font-display text-lg">Request Sent!</h3>
-            <p className="text-xs text-gray-600 mt-1 mb-3">I'll get back to you via email shortly to confirm your booking.</p>
-            <button onClick={onReset} className="px-3 py-1 bg-black text-white rounded-md font-body text-xs hover:bg-gray-800 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)]">
+            <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 mb-3">I'll get back to you via email shortly to confirm your booking.</p>
+            <button onClick={onReset} className="px-3 py-1 bg-black dark:bg-white text-white dark:text-black rounded-md font-body text-xs hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)]">
                 Done
             </button>
         </motion.div>

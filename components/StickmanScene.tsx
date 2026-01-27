@@ -1,7 +1,18 @@
 import React, { useEffect, useRef } from 'react';
+import { useTheme } from './ThemeContext';
 
 export const StickmanScene: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
+  
+  // Use a ref to track theme so we can read the current value inside the 
+  // requestAnimationFrame loop without adding 'theme' to the useEffect dependency array.
+  // This prevents the animation from resetting (restarting the 24s loop) when toggling dark mode.
+  const themeRef = useRef(theme);
+  
+  useEffect(() => {
+    themeRef.current = theme;
+  }, [theme]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -14,8 +25,7 @@ export const StickmanScene: React.FC = () => {
     const startTime = Date.now();
 
     // --- CONFIGURATION ---
-    const COLOR_A = '#1e1e1e'; // Black
-    const COLOR_B = '#22c55e'; // Green
+    const COLOR_B = '#22c55e'; // Green (Always Green)
     const LINE_WIDTH = 2;
     const HEAD_R = 7;
     const TORSO_LEN = 22;
@@ -75,6 +85,10 @@ export const StickmanScene: React.FC = () => {
       
       // Normalize Coordinate System: Scale all drawing ops to match logical pixels
       ctx.scale(dpr, dpr);
+
+      // --- DYNAMIC THEME COLOR ---
+      // Determine Stickman A's color based on the current theme ref
+      const COLOR_A = themeRef.current === 'dark' ? '#e5e5e5' : '#1e1e1e';
 
       if (!idCard || !aiCard) {
         animationFrameId = requestAnimationFrame(render);
@@ -453,7 +467,7 @@ export const StickmanScene: React.FC = () => {
 
     render();
     return () => cancelAnimationFrame(animationFrameId);
-  }, []);
+  }, []); // Intentionally empty dependency array so the loop doesn't restart. Use ref for theme.
 
   return (
     <canvas 

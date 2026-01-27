@@ -12,6 +12,13 @@ A high-performance, single-page application (SPA) developer portfolio featuring 
     *   *Powered by **Google Fonts**.*
 *   **Tactile Aesthetics:** Custom soft shadows (`2px 2px 2px rgba(0,0,0,0.15)`) that collapse on interaction to create a physical button-press feel.
 
+## 🌗 Dark Mode System
+
+The application features a fully reactive Dark Mode that persists user preference via `localStorage` and system settings.
+
+*   **Tailwind Strategy:** Uses the `class` strategy (`darkMode: 'class'`) with `dark:` variants for granular control over UI card borders, backgrounds (`zinc-900`), and text contrast.
+*   **Canvas Synchronization:** The `StickmanScene` uses a `useRef` tracking pattern to listen to theme changes. This allows the canvas to dynamically swap the Identity Character's color (Black ↔ White) in real-time **without resetting the 24-second animation loop** or causing a component re-mount.
+
 ## 🎬 The Living Interface (Stickman Scene)
 
 Beyond the static grid, the application features a **cinematic canvas overlay** (`components/StickmanScene.tsx`) where two digital entities inhabit the portfolio.
