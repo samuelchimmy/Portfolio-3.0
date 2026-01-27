@@ -62,9 +62,19 @@ export const StickmanScene: React.FC = () => {
       const idCard = document.getElementById('identity-card');
       const aiCard = document.getElementById('ai-assistant-card');
 
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // --- HIGH DPI FIX ---
+      const dpr = window.devicePixelRatio || 1;
+      
+      // Set Actual Pixel Resolution (Physical Pixels)
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      
+      // Enforce CSS Display Size (Logical Pixels)
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      
+      // Normalize Coordinate System: Scale all drawing ops to match logical pixels
+      ctx.scale(dpr, dpr);
 
       if (!idCard || !aiCard) {
         animationFrameId = requestAnimationFrame(render);
