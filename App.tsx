@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { IdentityCard } from './components/IdentityCard';
 import { AIChat } from './components/AIChat';
-import { ProjectShowcase } from './components/ProjectShowcase';
+import { ProjectShowcase } from './ProjectShowcase';
 import { TechMarquee } from './components/TechMarquee';
 import { Availability } from './components/Availability';
+import { PROJECTS } from './data';
 
 const App: React.FC = () => {
+  const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
+
   return (
     <div className="min-h-screen p-4 md:p-8 flex items-center justify-center">
       <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-4 lg:grid-rows-[400px_300px_140px] gap-6">
@@ -17,16 +20,20 @@ const App: React.FC = () => {
 
         {/* 2. AI Assistant: Top Right, Spans 2 Columns */}
         <div className="lg:col-span-3 lg:row-span-1 h-[500px] lg:h-full">
-          <AIChat />
+          <AIChat currentProject={PROJECTS[currentProjectIndex]} />
         </div>
 
         {/* 3. Project Showcase: Middle Right, Spans 2 Columns */}
         <div className="lg:col-span-2 lg:row-span-1 h-[400px] lg:h-full">
-          <ProjectShowcase />
+          <ProjectShowcase 
+            currentIndex={currentProjectIndex} 
+            setCurrentIndex={setCurrentProjectIndex} 
+          />
         </div>
 
         {/* 4. Availability: Small Floating Card next to Projects */}
-        <div className="lg:col-span-1 lg:row-span-1 h-[200px] lg:h-full">
+        {/* Increased mobile height from 200px to 340px for better calendar fit */}
+        <div className="lg:col-span-1 lg:row-span-1 h-[340px] lg:h-full">
           <Availability />
         </div>
 

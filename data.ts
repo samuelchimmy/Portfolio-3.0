@@ -7,14 +7,14 @@ import {
   SiDocker, 
   SiSolidity, 
   SiPostgresql, 
-  SiVite,
-  SiNextdotjs,
-  SiRust,
-  SiCoinbase,
-  SiResend,
-  SiSocketdotio,
-  SiTailwindcss,
-  SiCapacitor,
+  SiVite, 
+  SiNextdotjs, 
+  SiRust, 
+  SiCoinbase, 
+  SiResend, 
+  SiSocketdotio, 
+  SiTailwindcss, 
+  SiCapacitor
 } from 'react-icons/si';
 import { FaGem } from 'react-icons/fa';
 import { VscTerminalCmd } from 'react-icons/vsc';
@@ -42,6 +42,7 @@ export interface Project {
   color: string;
   url: string;
   status: 'Live' | 'Building' | 'Sunsetted';
+  likes: number;
 }
 
 export const PROJECTS: Project[] = [
@@ -52,6 +53,7 @@ export const PROJECTS: Project[] = [
     color: "#0052FF",
     url: "https://monipay.xyz",
     status: 'Live',
+    likes: 124,
   },
   {
     title: "Taxapp.ng",
@@ -60,22 +62,25 @@ export const PROJECTS: Project[] = [
     color: "#10B981",
     url: "https://taxapp.ng",
     status: 'Building',
+    likes: 89,
   },
   {
     title: "LighterDash",
-    description: "Institutional DeFi intelligence platform delivering real-time liquidation heatmaps and high-frequency analytics.",
+    description: "An institutional-grade analytics platform for decentralized trading. Transforming raw trade histories into a competitive edge with AI-powered insights from Google's Gemini.",
     stack: ["WebSockets", "React", "TanStack Query", "Gemini AI", "Supabase"],
     color: "#000000",
     url: "https://lighterdash.lol",
     status: 'Live',
+    likes: 215,
   },
   {
     title: "BaseStory",
     description: "Privacy-preserving on-chain social layer on Base, leveraging Account Abstraction for gasless, anonymous content.",
-    stack: ["Solidity", "Account Abstraction", "Supabase", "Coinbase Smart Wallet"],
+    stack: ["Solidity", "Account Abstraction", "Supabase", "Coinbase SW"],
     color: "#0052FF",
     url: "https://www.basestory.app",
     status: 'Live',
+    likes: 156,
   },
   {
     title: "Invitecodes.xyz",
@@ -84,6 +89,7 @@ export const PROJECTS: Project[] = [
     color: "#000000",
     url: "https://invitecodes.xyz",
     status: 'Live',
+    likes: 42,
   },
   {
     title: "Learnable AI",
@@ -92,6 +98,7 @@ export const PROJECTS: Project[] = [
     color: "#50e182",
     url: "https://www.learnable.fun",
     status: 'Live',
+    likes: 310,
   },
   {
     title: "Saros SDK Docs",
@@ -100,6 +107,7 @@ export const PROJECTS: Project[] = [
     color: "#6e4efd",
     url: "https://sarodocs.hashnode.space",
     status: 'Live',
+    likes: 28,
   },
   {
     title: "SuccinctStar",
@@ -108,6 +116,7 @@ export const PROJECTS: Project[] = [
     color: "#fe11c5",
     url: "https://succinctstar.club",
     status: 'Sunsetted',
+    likes: 67,
   },
   {
     title: "OptimumStar",
@@ -116,6 +125,7 @@ export const PROJECTS: Project[] = [
     color: "#be8dff",
     url: "https://optimumstar.quest",
     status: 'Sunsetted',
+    likes: 45,
   },
   {
     title: "CodeBox",
@@ -124,16 +134,41 @@ export const PROJECTS: Project[] = [
     color: "#3B82F6",
     url: "https://codebox.help",
     status: 'Sunsetted',
+    likes: 92,
   },
   {
     title: "This Portfolio",
     description: "An AI-native personal website featuring a custom \"Super-Intelligent\" assistant and real-time Google Calendar booking integration.",
     stack: ["React", "Tailwind CSS", "Gemini 1.5 Flash", "Google Cloud Run"],
     color: "#000000",
-    url: "https://0xnotes.lol",
+    url: "https://geometric-journal-portfolio-1023135672471.us-west1.run.app/",
     status: 'Live',
+    likes: 999,
   }
 ];
+
+// Custom Base Icon (Solid Circle with subtle bridge hint) to replace missing SiBase
+const BaseIcon = (props: React.ComponentProps<'svg'>) => {
+  return React.createElement(
+    'svg',
+    {
+      viewBox: "0 0 24 24",
+      fill: "currentColor",
+      height: "1em",
+      width: "1em",
+      ...props
+    },
+    React.createElement('circle', { cx: "12", cy: "12", r: "12" }),
+    React.createElement('path', {
+      d: "M7 12a5 5 0 0 1 10 0",
+      stroke: "white",
+      strokeWidth: "2",
+      strokeLinecap: "round",
+      strokeOpacity: "0.9",
+      fill: "none"
+    })
+  );
+};
 
 export const TECH_ICONS: Record<string, React.ElementType> = {
   "React": SiReact,
@@ -145,13 +180,14 @@ export const TECH_ICONS: Record<string, React.ElementType> = {
   "Gemini 1.5 Pro": FaGem,
   "Gemini 1.5 Flash": FaGem,
   "Solidity": SiSolidity,
-  "Base": SiCoinbase,
-  "Base Chain": SiCoinbase, // Keeping fallback just in case
+  "Base": BaseIcon,
+  "Base Chain": BaseIcon,
   "PostgreSQL": SiPostgresql,
   "Vite": SiVite,
   "Next.js": SiNextdotjs,
   "Rust": SiRust,
   "Coinbase Smart Wallet": SiCoinbase,
+  "Coinbase SW": SiCoinbase,
   "Resend": SiResend,
   "WebSockets": SiSocketdotio,
   "Account Abstraction": VscTerminalCmd,
@@ -169,7 +205,7 @@ export const TECH_STACK = [
   { name: "Google Cloud", icon: SiGooglecloud },
   { name: "Docker", icon: SiDocker },
   { name: "Gemini", icon: FaGem },
-  { name: "Base Chain", icon: SiCoinbase },
+  { name: "Base Chain", icon: BaseIcon },
   { name: "Vite", icon: SiVite },
   { name: "Tailwind", icon: SiTailwindcss },
   { name: "Resend", icon: SiResend },

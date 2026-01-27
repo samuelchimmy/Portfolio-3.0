@@ -25,7 +25,7 @@ export const IdentityCard: React.FC = () => {
   return (
     <Card className="h-full" title="Identity">
       <div className="flex flex-col h-full items-center text-center">
-        <div className="w-32 h-32 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden mb-6">
+        <div className="w-32 h-32 rounded-full border-2 border-black shadow-[2px_2px_2px_rgba(0,0,0,0.15)] overflow-hidden mb-6">
           <img 
             src={PROFILE.photoUrl} 
             alt={PROFILE.name} 
@@ -51,7 +51,7 @@ export const IdentityCard: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="GitHub Profile"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
           >
             <Github size={18} />
           </a>
@@ -60,7 +60,7 @@ export const IdentityCard: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="Twitter Profile"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
           >
             <Twitter size={18} />
           </a>
@@ -69,7 +69,7 @@ export const IdentityCard: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="LinkedIn Profile"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
           >
             <Linkedin size={18} />
           </a>
@@ -78,7 +78,7 @@ export const IdentityCard: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="Telegram Profile"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
           >
             <SiTelegram size={18} />
           </a>
@@ -87,7 +87,7 @@ export const IdentityCard: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="Discord Profile"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
           >
             <SiDiscord size={18} />
           </a>
@@ -96,14 +96,14 @@ export const IdentityCard: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             aria-label="Blog"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
           >
             <Book size={18} />
           </a>
           <a 
             href={`mailto:${PROFILE.links.email}`}
             aria-label="Email"
-            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+            className="p-2.5 border-2 border-black rounded-lg hover:bg-gray-100 transition-colors shadow-[2px_2px_2px_rgba(0,0,0,0.15)] active:translate-y-[1px] active:shadow-none"
           >
             <Mail size={18} />
           </a>

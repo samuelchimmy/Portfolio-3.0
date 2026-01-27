@@ -13,11 +13,13 @@ interface CardProps {
 export const Card: React.FC<CardProps> = ({ children, className, title, noPadding = false, onClick }) => {
   return (
     <motion.div
-      whileHover={{ scale: 1.01, boxShadow: '8px 8px 0px 0px rgba(0,0,0,1)' }}
-      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      initial={{ y: 0, boxShadow: '2px 2px 2px rgba(0,0,0,0.15)' }}
+      whileHover={{ y: -2, boxShadow: '4px 4px 6px rgba(0,0,0,0.1)' }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }} // Increased damping for stability
       onClick={onClick}
       className={clsx(
-        "bg-white border-2 border-black shadow-hard rounded-xl overflow-hidden flex flex-col relative",
+        "bg-white border-2 border-black rounded-xl overflow-hidden flex flex-col relative",
+        // Removed shadow-hard class here as it's handled by motion.div initial/animate to prevent conflicts
         className
       )}
     >

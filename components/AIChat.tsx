@@ -1,80 +1,100 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Card } from './Card';
-import { Send, Bot, User } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { PROJECTS, PROFILE } from '../data';
+import { Send, Bot, User, CheckCircle, Loader2, Download } from 'lucide-react';
+import { PROJECTS, PROFILE, Project } from '../data';
+import { GoogleGenAI, Chat, FunctionDeclaration, Type, Tool, Part } from "@google/genai";
+
+// Shared Backend URL
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzA6KW-e43M3uT57G4O5aCCRDAE9m4oUChTuW0vbWDJaPt0MNn_EvJ2vT5ROTauqSmQ/exec";
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   text: string;
+  type?: 'text' | 'success-card' | 'resume-card';
+  bookingDetails?: any;
+}
+
+interface AIChatProps {
+  currentProject?: Project;
 }
 
 const HINT_PHRASES = [
-  "Is Samuel free for a meeting?",
-  "Tell me about MoniPay.",
-  "Download Samuel's Resume.",
-  "What is your tech stack?",
-  "Explain the Gasless Relayer."
+  "Are you free next Tuesday?",
+  "Book a meeting with Samuel",
+  "How does MoniPay work?",
+  "Tell me about the tech stack."
 ];
 
-const LoadingDots = () => (
-  <motion.div className="flex space-x-1">
-    <motion.span
-      className="w-2 h-2 bg-gray-500 rounded-full"
-      animate={{ y: [0, -4, 0] }}
-      transition={{ duration: 0.5, repeat: Infinity, ease: 'easeInOut' }}
-    />
-    <motion.span
-      className="w-2 h-2 bg-gray-500 rounded-full"
-      animate={{ y: [0, -4, 0] }}
-      transition={{ duration: 0.5, delay: 0.1, repeat: Infinity, ease: 'easeInOut' }}
-    />
-    <motion.span
-      className="w-2 h-2 bg-gray-500 rounded-full"
-      animate={{ y: [0, -4, 0] }}
-      transition={{ duration: 0.5, delay: 0.2, repeat: Infinity, ease: 'easeInOut' }}
-    />
-  </motion.div>
-);
+// --- TOOL DEFINITIONS ---
 
-const TypewriterText: React.FC<{ text: string; onComplete?: () => void }> = ({ text, onComplete }) => {
-  const [displayedText, setDisplayedText] = useState('');
-  
-  useEffect(() => {
-    let index = 0;
-    const timer = setInterval(() => {
-      if (index < text.length) {
-        setDisplayedText((prev) => prev + text.charAt(index));
-        index++;
-      } else {
-        clearInterval(timer);
-        if (onComplete) onComplete();
-      }
-    }, 15);
-
-    return () => clearInterval(timer);
-  }, [text, onComplete]);
-
-  return <span>{displayedText}</span>;
+const checkCalendarTool: FunctionDeclaration = {
+  name: "check_calendar",
+  description: "Fetches Samuel's calendar availability for a specific date to find free slots.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      date: {
+        type: Type.STRING,
+        description: "The date to check in YYYY-MM-DD format.",
+      },
+    },
+    required: ["date"],
+  },
 };
 
-export const AIChat: React.FC = () => {
+const createBookingTool: FunctionDeclaration = {
+  name: "create_booking",
+  description: "Book a meeting with Samuel after collecting all necessary details.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      name: { type: Type.STRING, description: "The name of the person booking." },
+      email: { type: Type.STRING, description: "The email of the person booking." },
+      purpose: { type: Type.STRING, description: "The reason or agenda for the meeting." },
+      date: { type: Type.STRING, description: "The date in YYYY-MM-DD format." },
+      time: { type: Type.STRING, description: "The time in HH:MM format (24-hour)." },
+      duration: { type: Type.NUMBER, description: "Duration in minutes (15, 30, or 45)." },
+    },
+    required: ["name", "email", "purpose", "date", "time", "duration"],
+  },
+};
+
+const getResumeTool: FunctionDeclaration = {
+  name: "get_resume",
+  description: "Provides a downloadable PDF of Samuel's Resume/CV.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {},
+  },
+};
+
+const tools: Tool[] = [{
+  functionDeclarations: [checkCalendarTool, createBookingTool, getResumeTool],
+}];
+
+// --- COMPONENT ---
+
+export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', text: "Hello! I'm Samuel's virtual assistant. Ask me anything about his projects, skills, or availability." }
+    { role: 'assistant', text: "Hello! I'm Samuel's AI agent. I can answer questions about his work or help you book a meeting directly in this chat." }
   ]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [toolStatus, setToolStatus] = useState<string | null>(null);
   
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [currentPlaceholder, setCurrentPlaceholder] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   
   const scrollRef = useRef<HTMLDivElement>(null);
+  const chatRef = useRef<Chat | null>(null);
 
+  // Auto-scroll
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages, isLoading]);
+  }, [messages, isTyping, toolStatus]);
 
+  // Typewriter placeholder effect
   useEffect(() => {
     const currentHint = HINT_PHRASES[placeholderIndex];
     let timeoutId: number;
@@ -96,101 +116,297 @@ export const AIChat: React.FC = () => {
       } else {
         timeoutId = window.setTimeout(() => {
           setIsDeleting(true);
-        }, 2000);
+        }, 3000);
       }
     }
-
     return () => clearTimeout(timeoutId);
   }, [currentPlaceholder, isDeleting, placeholderIndex]);
 
-  const getMockResponse = (query: string): string => {
-    const lowerQuery = query.toLowerCase();
+  // --- API FUNCTIONS ---
 
-    if (lowerQuery.includes('gasless relayer') || lowerQuery.includes('invisible wallet')) {
-      return "The Gasless Relayer is a proprietary infrastructure component in MoniPay. It abstracts gas fees for merchants, allowing them to process crypto transactions without holding ETH/BASE for fees. Combined with the 'Invisible Wallet' monitag architecture, it uses local AES-GCM encryption to securely manage session keys directly on the device.";
-    }
-    if (lowerQuery.includes('resume') || lowerQuery.includes('cv')) {
-      return "You can download Samuel's Resume directly. (Simulating download...) For now, please check his LinkedIn profile in the Identity card for the full work history.";
-    }
-    if (lowerQuery.includes('meeting') || lowerQuery.includes('calendar') || lowerQuery.includes('book')) {
-      return "Samuel is currently open for meetings! Please use the Availability card (bottom right) to book a slot via Google Calendar integration.";
-    }
-    for (const project of PROJECTS) {
-      if (lowerQuery.includes(project.title.toLowerCase())) {
-        return `Ah, ${project.title}! It's a project where Samuel worked on ${project.description}. The tech stack included ${project.stack.join(', ')}. It's currently ${project.status}.`;
+  const checkCalendar = async (dateStr: string): Promise<string> => {
+    try {
+      setToolStatus("Checking Samuel's calendar...");
+      
+      const requestedDate = new Date(dateStr);
+      
+      // Hardcoded Sunday Check
+      // Using getUTCDay() ensures we check the day of the requested YYYY-MM-DD (which parses to UTC midnight)
+      // 0 represents Sunday.
+      if (!isNaN(requestedDate.getTime()) && requestedDate.getUTCDay() === 0) {
+        setToolStatus(null);
+        return `Samuel is unavailable on Sundays (${dateStr}). Please ask the user to choose a weekday or Saturday.`;
       }
+
+      const response = await fetch(BACKEND_URL, { redirect: 'follow' });
+      const bookedSlots: { start: string, end: string }[] = await response.json();
+
+      // Simple slot calculation logic
+      const hostOffset = 1; // Lagos UTC+1
+      const slots = [];
+      
+      // Generate slots from 12:00 PM to 6:00 PM (Host Time)
+      for (let hour = 12; hour < 18; hour++) {
+        slots.push({ h: hour, m: 0 });
+        slots.push({ h: hour, m: 30 });
+      }
+
+      const freeSlots = slots.filter(slot => {
+        const slotDate = new Date(requestedDate);
+        slotDate.setUTCHours(slot.h - hostOffset, slot.m, 0, 0);
+        const slotEnd = new Date(slotDate.getTime() + 30 * 60000);
+
+        // Check collision
+        const isBooked = bookedSlots.some(b => {
+          const bStart = new Date(b.start);
+          const bEnd = new Date(b.end);
+          return (slotDate < bEnd && slotEnd > bStart);
+        });
+        return !isBooked;
+      });
+
+      if (freeSlots.length === 0) {
+        return "No slots available on this date. Offer to waitlist or check the next day.";
+      }
+
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      return `Available slots on ${dateStr} (${timeZone}): ` + freeSlots.map(s => {
+          const d = new Date(requestedDate);
+          d.setUTCHours(s.h - hostOffset, s.m);
+          // Explicitly format to user's timezone
+          return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone });
+      }).join(", ");
+
+    } catch (e) {
+      console.error(e);
+      return "Error fetching calendar data.";
+    } finally {
+      setToolStatus(null);
     }
-    if (lowerQuery.includes('skill') || lowerQuery.includes('stack') || lowerQuery.includes('tech')) {
-      return "Samuel is proficient in a modern web3 stack including React, TypeScript, Solidity, and Rust. He's also experienced with Supabase for backends and Google Cloud for infrastructure.";
-    }
-    if (lowerQuery.includes('contact') || lowerQuery.includes('email') || lowerQuery.includes('available')) {
-      return `He is! You can reach him at ${PROFILE.links.email} to discuss new opportunities.`;
-    }
-    if (lowerQuery.includes('hello') || lowerQuery.includes('hi')) {
-        return "Hello there! How can I help you learn more about Samuel's work?";
-    }
-    return "That's a great question. I can tell you about specific projects like MoniPay or BaseStory, or his overall skillset. What are you most interested in?";
   };
 
+  const createBooking = async (args: any): Promise<string> => {
+    try {
+      setToolStatus("Finalizing booking...");
+      const { name, email, purpose, date, time, duration } = args;
+
+      // Construct ISO string
+      const d = new Date(`${date}T${time}`);
+      // Fallback if parsing fails
+      const bookingTimeUTC = !isNaN(d.getTime()) ? d.toISOString() : new Date().toISOString();
+
+      const payload = {
+        name, email, purpose, duration: duration.toString(), bookingTimeUTC
+      };
+
+      await fetch(BACKEND_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      // Inject Success Card into Chat
+      setMessages(prev => [...prev, {
+        role: 'system',
+        text: 'Booking Confirmed',
+        type: 'success-card',
+        bookingDetails: { date, time, duration }
+      }]);
+
+      return "Booking request sent successfully. I have displayed a confirmation card to the user.";
+    } catch (e) {
+      return "Failed to book. Please ask the user to use the manual form.";
+    } finally {
+      setToolStatus(null);
+    }
+  };
+
+  // --- MAIN CHAT LOGIC ---
+
   const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
-    const userMessage = input;
+    if (!input.trim() || isTyping) return;
+    const userText = input;
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
-    setIsLoading(true);
+    
+    // Add User Message
+    setMessages(prev => [...prev, { role: 'user', text: userText }]);
+    setIsTyping(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const responseText = getMockResponse(userMessage);
-      setMessages(prev => [...prev, { role: 'assistant', text: responseText }]);
+      if (!chatRef.current) {
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        
+        chatRef.current = ai.chats.create({
+          model: 'gemini-3-flash-preview',
+          config: {
+            tools,
+            systemInstruction: `You are Samuel's Executive AI Assistant. Your goal is to be a "Conversational Interviewer".
+            
+            **YOUR KNOWLEDGE BASE:**
+            - **Profile:** ${JSON.stringify(PROFILE)}
+            - **Projects:** ${JSON.stringify(PROJECTS)}
+            - **Current User Timezone:** ${userTimeZone}
+            - **Today's Date:** ${new Date().toDateString()}
+
+            **BEHAVIOR & RULES:**
+            1. **Active Project Context:** The user is currently looking at: ${currentProject?.title || "Home"}. Use this context to offer relevant insights.
+            2. **Booking Flow (The Interview):**
+               - **IMPORTANT:** Samuel is **UNAVAILABLE ON SUNDAYS**. Do not suggest Sunday slots. If a user asks for Sunday, politely decline and offer Saturday or Monday.
+               - **Step 1 (Check):** If user asks about availability, call \`check_calendar(date)\`.
+               - **Step 2 (Suggest):** Present free slots **in the user's local timezone** (${userTimeZone}). The slots returned by the tool are already converted to ${userTimeZone}.
+               - **Step 3 (Interview):** If they pick a slot, ask for Name, Email, and Purpose ONE BY ONE. Do not ask for everything at once.
+               - **Step 4 (Confirm):** Summarize details. Call \`create_booking\` ONLY after explicit confirmation.
+            3. **Waitlist:** If a day is full, offer to check the next day or add them to a waitlist (pretend to add).
+            4. **Pre-Meeting:** After booking, ask: "Is there a specific document you'd like Samuel to review before the call?"
+            5. **Handoff:** If the user seems frustrated, tell them they can use the manual "Book a Call" card.
+            6. **Resume:** If user asks for resume, CV, or background info that requires a document, call \`get_resume\`.
+            
+            **TONE:** Professional, efficient, slightly witty.
+            `,
+          },
+        });
+      }
+
+      // Inject Context if Project Changed
+      let msgToSend = userText;
+      if (currentProject) {
+        msgToSend = `[Context: User is viewing "${currentProject.title}"] ${userText}`;
+      }
+
+      // Send user message
+      let response = await chatRef.current.sendMessage({ message: msgToSend });
+      
+      // Handle Function Calls Loop
+      let functionCalls = response.functionCalls;
+
+      while (functionCalls && functionCalls.length > 0) {
+        const toolResponses: Part[] = [];
+        
+        for (const call of functionCalls) {
+          let result = "";
+          if (call.name === "check_calendar") {
+            const args = call.args as any;
+            result = await checkCalendar(args.date);
+          } else if (call.name === "create_booking") {
+            const args = call.args as any;
+            result = await createBooking(args);
+          } else if (call.name === "get_resume") {
+            result = "Resume card displayed to user.";
+            setMessages(prev => [...prev, {
+              role: 'system',
+              text: 'Download Resume',
+              type: 'resume-card'
+            }]);
+          }
+          
+          toolResponses.push({
+            functionResponse: {
+              name: call.name,
+              id: call.id,
+              response: { result }
+            }
+          });
+        }
+        
+        // Send tool results back to model
+        response = await chatRef.current.sendMessage({ message: toolResponses });
+        functionCalls = response.functionCalls;
+      }
+
+      // Final Text Response
+      const text = response.text;
+      if (text) {
+        setMessages(prev => [...prev, { role: 'assistant', text }]);
+      }
+
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'assistant', text: "I'm having a bit of trouble right now. Please try again later!" }]);
+      console.error(error);
+      setMessages(prev => [...prev, { role: 'assistant', text: "I'm having trouble connecting right now. Please try again or use the manual booking form." }]);
     } finally {
-      setIsLoading(false);
+      setIsTyping(false);
+      setToolStatus(null);
     }
   };
 
   return (
-    <Card className="h-full flex flex-col overflow-hidden" title="AI Assistant (Gemini 1.5 Flash)" noPadding>
-      <video
-        src="/assets/bg.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
-        onContextMenu={(e) => e.preventDefault()}
-        className="absolute inset-0 w-full h-full object-cover z-0 opacity-15 pointer-events-none mix-blend-multiply"
-      />
-
-      <div className="relative z-10 flex flex-col h-full">
+    <Card className="h-full flex flex-col overflow-hidden" title="AI Executive Assistant" noPadding>
+      <div className="flex flex-col h-full bg-white">
+        {/* Chat Area */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar min-h-0">
           {messages.map((msg, idx) => (
-            <div 
-              key={idx} 
-              className={`flex items-start gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
-            >
-              <div className={`w-8 h-8 rounded-full border-2 border-black flex items-center justify-center shrink-0 ${msg.role === 'assistant' ? 'bg-yellow-200' : 'bg-blue-200'} shadow-hard-pressed`}>
-                {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
-              </div>
-              <div 
-                className={`max-w-[80%] p-3 rounded-lg border-2 border-black shadow-hard-pressed font-body text-base leading-snug backdrop-blur-md
-                ${msg.role === 'assistant' ? 'bg-white/90 rounded-tl-none' : 'bg-blue-50/90 rounded-tr-none'}`}
-              >
-                {msg.role === 'assistant' ? <TypewriterText text={msg.text} /> : msg.text}
-              </div>
+            <div key={idx} className={`flex flex-col gap-2`}>
+              {msg.type === 'success-card' ? (
+                // Success Card - Emerald Green, aligned, compact
+                <div className="mr-auto w-fit max-w-[85%] bg-emerald-50 border border-emerald-200 rounded-lg rounded-tl-none p-3 shadow-hard-pressed">
+                  <div className="flex items-center gap-2 text-emerald-800 font-display text-sm mb-1.5">
+                    <CheckCircle size={16} />
+                    <span>Booking Confirmed</span>
+                  </div>
+                  <div className="text-xs font-body text-emerald-900 space-y-0.5">
+                    <p><strong>Date:</strong> {msg.bookingDetails.date}</p>
+                    <p><strong>Time:</strong> {msg.bookingDetails.time}</p>
+                    <p><strong>Duration:</strong> {msg.bookingDetails.duration} mins</p>
+                  </div>
+                </div>
+              ) : msg.type === 'resume-card' ? (
+                // Resume Card - Emerald Green, aligned, compact
+                <div className="mr-auto w-fit max-w-[85%] bg-emerald-50 border border-emerald-200 rounded-lg rounded-tl-none p-3 shadow-hard-pressed">
+                  <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                          <div className="p-1.5 bg-emerald-200 rounded-full border border-emerald-300">
+                              <Download className="text-emerald-800" size={14} />
+                          </div>
+                          <div className="flex flex-col">
+                              <span className="font-display text-sm text-emerald-900 leading-none">Samuel's Resume</span>
+                              <span className="text-[9px] uppercase font-bold text-emerald-600 tracking-wider">PDF Document</span>
+                          </div>
+                      </div>
+                      <a 
+                          href="/public/assets/dev%20resume.pdf" 
+                          download="Samuel_Chiedozie_Resume.pdf"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2 py-1 bg-emerald-600 text-white rounded-md font-bold text-[10px] shadow-sm hover:bg-emerald-700 transition-colors flex items-center gap-1 whitespace-nowrap"
+                      >
+                          Download
+                      </a>
+                  </div>
+                </div>
+              ) : (
+                // Standard Chat Bubbles
+                <div className={`flex items-start gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                  <div className={`w-8 h-8 rounded-full border-2 border-black flex items-center justify-center shrink-0 ${msg.role === 'assistant' ? 'bg-yellow-200' : 'bg-blue-200'} shadow-hard-pressed`}>
+                    {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
+                  </div>
+                  <div 
+                    className={`max-w-[85%] p-3 rounded-lg border-2 border-black shadow-hard-pressed font-body text-base leading-snug backdrop-blur-md
+                    ${msg.role === 'assistant' ? 'bg-white/90 rounded-tl-none' : 'bg-blue-50/90 rounded-tr-none'}`}
+                  >
+                    {msg.text}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
-          {isLoading && (
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full border-2 border-black flex items-center justify-center shrink-0 bg-yellow-200 shadow-hard-pressed">
-                <Bot size={16} />
-              </div>
-              <div className="bg-white/90 backdrop-blur-md p-3 rounded-lg rounded-tl-none border-2 border-black shadow-hard-pressed">
-                <LoadingDots />
-              </div>
+          
+          {/* Status Indicator */}
+          {(isTyping || toolStatus) && (
+            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 ml-12 animate-pulse">
+               {toolStatus ? (
+                 <>
+                   <Loader2 size={12} className="animate-spin" />
+                   {toolStatus}
+                 </>
+               ) : (
+                 "Thinking..."
+               )}
             </div>
           )}
         </div>
+
+        {/* Input Area */}
         <div className="p-3 border-t-2 border-black bg-gray-50/90 backdrop-blur-md">
           <div className="flex gap-2">
             <input
@@ -199,11 +415,12 @@ export const AIChat: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder={currentPlaceholder}
-              className="flex-1 bg-white border-2 border-black rounded-lg px-4 py-2 font-body focus:outline-none focus:ring-2 focus:ring-black focus:shadow-hard-pressed transition-all placeholder:text-gray-400 placeholder:italic"
+              disabled={isTyping}
+              className="flex-1 bg-white border-2 border-black rounded-lg px-4 py-2 font-body focus:outline-none focus:ring-2 focus:ring-black focus:shadow-hard-pressed transition-all placeholder:text-gray-400 placeholder:italic disabled:bg-gray-100 disabled:text-gray-400"
             />
             <button
               onClick={handleSend}
-              disabled={isLoading}
+              disabled={isTyping || !input.trim()}
               className="p-2 bg-black text-white rounded-lg border-2 border-black shadow-hard hover:bg-gray-800 active:translate-y-px active:shadow-hard-pressed transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send size={20} />
