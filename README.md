@@ -12,11 +12,23 @@ A high-performance, single-page application (SPA) developer portfolio featuring 
     *   *Powered by **Google Fonts**.*
 *   **Tactile Aesthetics:** Custom soft shadows (`2px 2px 2px rgba(0,0,0,0.15)`) that collapse on interaction to create a physical button-press feel.
 
+## 🎬 The Living Interface (Stickman Scene)
+
+Beyond the static grid, the application features a **cinematic canvas overlay** (`components/StickmanScene.tsx`) where two digital entities inhabit the portfolio.
+
+*   **Real-Time Physics:** Characters treat DOM elements (`#identity-card` and `#ai-assistant-card`) as physical solids, calculating floor positions and edge boundaries dynamically.
+*   **Procedural Animation:** Uses linear interpolation (lerp) and easing functions to generate smooth walking, jumping (parabolic arcs), and "relaxed" sitting postures where limbs dangle organically off the UI cards.
+*   **The 24-Second Loop:**
+    1.  **0s-4s (Lounging):** Characters sit casually on the far edges, leaning back on their hands.
+    2.  **6s-12s (The Crossing):** They hop across the grid gaps using gravity-simulated jumps (`height: 60px`).
+    3.  **12s-16s (Interaction):** A "Happy Dance" and handshake in the center of the AI card.
+    4.  **20s+ (Discussion):** They retreat to the inner edges to sit face-to-face, indefinitely discussing the user's journey.
+
 ## 🛠 Tech Stack
 
 *   **Framework:** React 19 (Vite) + TypeScript
 *   **Styling:** Tailwind CSS
-*   **Animation:** Framer Motion
+*   **Animation:** Framer Motion & HTML5 Canvas
 *   **AI Model:** **Google Gemini 1.5 Flash** (via `@google/genai`)
 *   **Backend/Integration:** **Google Apps Script** (Calendar API Proxy)
 *   **Icons:** Lucide React & React Icons
@@ -46,6 +58,7 @@ The "Book a Call" card (`components/Availability.tsx`) provides a live window in
 
 ## 📂 Project Structure
 
+*   **`components/StickmanScene.tsx`**: The canvas-based animation layer handling the 24s cinematic loop and physics.
 *   **`components/AIChat.tsx`**: The brain of the app. Handles Gemini streaming, tool definitions, and chat state.
 *   **`components/Availability.tsx`**: Logic for the calendar grid, slot generation, and backend communication.
 *   **`ProjectShowcase.tsx`**: Interactive carousel for projects with "like" functionality persistence.

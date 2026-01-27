@@ -23,7 +23,7 @@ export const IdentityCard: React.FC = () => {
   }, []);
 
   return (
-    <Card className="h-full" title="Identity">
+    <Card id="identity-card" className="h-full" title="Identity">
       <div className="flex flex-col h-full items-center text-center">
         <div className="w-32 h-32 rounded-full border-2 border-black shadow-[2px_2px_2px_rgba(0,0,0,0.15)] overflow-hidden mb-6">
           <img 

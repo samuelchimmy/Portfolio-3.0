@@ -8,11 +8,13 @@ interface CardProps {
   title?: string;
   noPadding?: boolean;
   onClick?: () => void;
+  id?: string;
 }
 
-export const Card: React.FC<CardProps> = ({ children, className, title, noPadding = false, onClick }) => {
+export const Card: React.FC<CardProps> = ({ children, className, title, noPadding = false, onClick, id }) => {
   return (
     <motion.div
+      id={id}
       initial={{ y: 0, boxShadow: '2px 2px 2px rgba(0,0,0,0.15)' }}
       whileHover={{ y: -2, boxShadow: '4px 4px 6px rgba(0,0,0,0.1)' }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }} // Increased damping for stability
