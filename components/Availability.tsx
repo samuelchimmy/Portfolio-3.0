@@ -3,15 +3,16 @@ import { Card } from './Card';
 import { ChevronLeft, ChevronRight, Send, ArrowLeft, Globe, Loader2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
+import { SERVICES } from '../data';
 
 // --------------------------------------------------------------------------
 // GOOGLE APPS SCRIPT BACKEND CONFIGURATION
 // The backend is hosted as a Google Apps Script Web App.
 // --------------------------------------------------------------------------
-const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzA6KW-e43M3uT57G4O5aCCRDAE9m4oUChTuW0vbWDJaPt0MNn_EvJ2vT5ROTauqSmQ/exec"; 
+const BACKEND_URL = SERVICES.calendarUrl;
 
 // Host is in Lagos (UTC+1). This ensures slots are calculated relative to Host's time.
-const HOST_OFFSET = 1; 
+const HOST_OFFSET = SERVICES.calendarHostOffset;
 
 interface CalendarEvent {
     start: string;
@@ -42,7 +43,7 @@ const SetupNeededView: React.FC = () => (
             The calendar backend is not connected. 
         </p>
         <div className="text-[10px] text-left bg-gray-100 dark:bg-zinc-800 p-3 rounded border border-gray-200 dark:border-zinc-700 w-full font-mono">
-            Ensure BACKEND_URL in components/Availability.tsx points to the Google Apps Script Web App URL.
+            Update SERVICES.calendarUrl in data.ts to point to your Google Apps Script Web App.
         </div>
     </div>
 );

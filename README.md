@@ -17,6 +17,7 @@ A high-performance, single-page application (SPA) developer portfolio featuring 
 The application features a fully reactive Dark Mode that persists user preference via `localStorage` and system settings.
 
 *   **Tailwind Strategy:** Uses the `class` strategy (`darkMode: 'class'`) with `dark:` variants for granular control over UI card borders, backgrounds (`zinc-900`), and text contrast.
+*   **Adaptive UI:** The theme toggle intelligently relocates based on device size—nesting within the **Identity Card** on mobile and the **AI Assistant** on desktop to maximize ergonomic usability.
 *   **Canvas Synchronization:** The `StickmanScene` uses a `useRef` tracking pattern to listen to theme changes. This allows the canvas to dynamically swap the Identity Character's color (Black ↔ White) in real-time **without resetting the 24-second animation loop** or causing a component re-mount.
 
 ## 🎬 The Living Interface (Stickman Scene)
@@ -25,6 +26,8 @@ Beyond the static grid, the application features a **cinematic canvas overlay** 
 
 *   **Real-Time Physics:** Characters treat DOM elements (`#identity-card` and `#ai-assistant-card`) as physical solids, calculating floor positions and edge boundaries dynamically.
 *   **Procedural Animation:** Uses linear interpolation (lerp) and easing functions to generate smooth walking, jumping (parabolic arcs), and "relaxed" sitting postures where limbs dangle organically off the UI cards.
+*   **Meta-Awareness (Mouse Tracking):** The characters are aware of the user's presence. When the cursor approaches, their heads rotate to track the mouse movement (clamped to natural angles).
+*   **Fourth Wall Breaking:** Clicking on or near a character triggers a speech bubble event, where they comment on the user's cursor, the grid layout, or the code itself.
 *   **The 24-Second Loop:**
     1.  **0s-4s (Lounging):** Characters sit casually on the far edges, leaning back on their hands.
     2.  **6s-12s (The Crossing):** They hop across the grid gaps using gravity-simulated jumps (`height: 60px`).
@@ -36,7 +39,7 @@ Beyond the static grid, the application features a **cinematic canvas overlay** 
 *   **Framework:** React 19 (Vite) + TypeScript
 *   **Styling:** Tailwind CSS
 *   **Animation:** Framer Motion & HTML5 Canvas
-*   **AI Model:** **Google Gemini 1.5 Flash** (via `@google/genai`)
+*   **AI Model:** **Google Gemini 3.0 Flash Preview** (via `@google/genai`)
 *   **Backend/Integration:** **Google Apps Script** (Calendar API Proxy)
 *   **Icons:** Lucide React & React Icons
 
@@ -46,7 +49,7 @@ The core differentiator of this portfolio is the **AI Executive Assistant** (`co
 
 ### Implementation Details:
 *   **SDK:** Built using the `@google/genai` library.
-*   **Model:** `gemini-1.5-flash` is used for high-speed, low-latency conversational responses.
+*   **Model:** `gemini-3-flash-preview` is used for high-speed, low-latency conversational responses with improved reasoning capabilities.
 *   **System Instructions:** The AI is prompted to act as "Samuel's Executive Assistant", maintaining a professional yet witty persona with strict context awareness of the user's current view.
 
 ### 🔧 Function Calling (Tools)
@@ -65,7 +68,7 @@ The "Book a Call" card (`components/Availability.tsx`) provides a live window in
 
 ## 📂 Project Structure
 
-*   **`components/StickmanScene.tsx`**: The canvas-based animation layer handling the 24s cinematic loop and physics.
+*   **`components/StickmanScene.tsx`**: The canvas-based animation layer handling the 24s cinematic loop, physics, and user interaction.
 *   **`components/AIChat.tsx`**: The brain of the app. Handles Gemini streaming, tool definitions, and chat state.
 *   **`components/Availability.tsx`**: Logic for the calendar grid, slot generation, and backend communication.
 *   **`ProjectShowcase.tsx`**: Interactive carousel for projects with "like" functionality persistence.

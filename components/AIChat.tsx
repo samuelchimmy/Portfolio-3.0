@@ -1,12 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Card } from './Card';
 import { Send, Bot, User, CheckCircle, Loader2, Download, Sun, Moon } from 'lucide-react';
-import { PROJECTS, PROFILE, Project } from '../data';
+import { PROJECTS, PROFILE, Project, SERVICES } from '../data';
 import { GoogleGenAI, Chat, FunctionDeclaration, Type, Tool, Part } from "@google/genai";
 import { useTheme } from './ThemeContext';
-
-// Shared Backend URL
-const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzA6KW-e43M3uT57G4O5aCCRDAE9m4oUChTuW0vbWDJaPt0MNn_EvJ2vT5ROTauqSmQ/exec";
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -17,6 +14,8 @@ interface Message {
 
 interface AIChatProps {
   currentProject?: Project;
+  systemInstructionExtras?: string;
+  accentColor?: string; // Hex code for custom styling
 }
 
 const HINT_PHRASES = [
@@ -75,11 +74,11 @@ const tools: Tool[] = [{
 
 // --- COMPONENT ---
 
-export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
+export const AIChat: React.FC<AIChatProps> = ({ currentProject, systemInstructionExtras, accentColor }) => {
   const { theme, toggleTheme } = useTheme();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', text: "Hello! I'm Samuel's AI agent. I can answer questions about his work or help you book a meeting directly in this chat." }
+    { role: 'assistant', text: `Hello! I'm ${PROFILE.name}'s AI agent. I can answer questions about his work or help you book a meeting directly in this chat.` }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [toolStatus, setToolStatus] = useState<string | null>(null);
@@ -90,6 +89,12 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
   
   const scrollRef = useRef<HTMLDivElement>(null);
   const chatRef = useRef<Chat | null>(null);
+
+  // Re-initialize chat if system instructions change (e.g. route change)
+  useEffect(() => {
+     chatRef.current = null;
+     // Optionally we could reset messages here if we wanted a fresh start on route change
+  }, [systemInstructionExtras]);
 
   // Auto-scroll
   useEffect(() => {
@@ -128,23 +133,21 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
 
   const checkCalendar = async (dateStr: string): Promise<string> => {
     try {
-      setToolStatus("Checking Samuel's calendar...");
+      setToolStatus(`Checking ${PROFILE.name}'s calendar...`);
       
       const requestedDate = new Date(dateStr);
       
       // Hardcoded Sunday Check
-      // Using getUTCDay() ensures we check the day of the requested YYYY-MM-DD (which parses to UTC midnight)
-      // 0 represents Sunday.
       if (!isNaN(requestedDate.getTime()) && requestedDate.getUTCDay() === 0) {
         setToolStatus(null);
-        return `Samuel is unavailable on Sundays (${dateStr}). Please ask the user to choose a weekday or Saturday.`;
+        return `${PROFILE.name} is unavailable on Sundays (${dateStr}). Please ask the user to choose a weekday or Saturday.`;
       }
 
-      const response = await fetch(BACKEND_URL, { redirect: 'follow' });
+      const response = await fetch(SERVICES.calendarUrl, { redirect: 'follow' });
       const bookedSlots: { start: string, end: string }[] = await response.json();
 
       // Simple slot calculation logic
-      const hostOffset = 1; // Lagos UTC+1
+      const hostOffset = SERVICES.calendarHostOffset; 
       const slots = [];
       
       // Generate slots from 12:00 PM to 6:00 PM (Host Time)
@@ -201,7 +204,7 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
         name, email, purpose, duration: duration.toString(), bookingTimeUTC
       };
 
-      await fetch(BACKEND_URL, {
+      await fetch(SERVICES.calendarUrl, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
@@ -244,7 +247,7 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
           model: 'gemini-3-flash-preview',
           config: {
             tools,
-            systemInstruction: `You are Samuel's Executive AI Assistant. Your goal is to be a "Conversational Interviewer".
+            systemInstruction: `You are ${PROFILE.name}'s Executive AI Assistant. Your goal is to be a "Conversational Interviewer".
             
             **YOUR KNOWLEDGE BASE:**
             - **Profile:** ${JSON.stringify(PROFILE)}
@@ -252,16 +255,19 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
             - **Current User Timezone:** ${userTimeZone}
             - **Today's Date:** ${new Date().toDateString()}
 
+            **SPECIAL INSTRUCTIONS:**
+            ${systemInstructionExtras || "None. Act as the default assistant."}
+
             **BEHAVIOR & RULES:**
             1. **Active Project Context:** The user is currently looking at: ${currentProject?.title || "Home"}. Use this context to offer relevant insights.
             2. **Booking Flow (The Interview):**
-               - **IMPORTANT:** Samuel is **UNAVAILABLE ON SUNDAYS**. Do not suggest Sunday slots. If a user asks for Sunday, politely decline and offer Saturday or Monday.
+               - **IMPORTANT:** ${PROFILE.name} is **UNAVAILABLE ON SUNDAYS**. Do not suggest Sunday slots. If a user asks for Sunday, politely decline and offer Saturday or Monday.
                - **Step 1 (Check):** If user asks about availability, call \`check_calendar(date)\`.
                - **Step 2 (Suggest):** Present free slots **in the user's local timezone** (${userTimeZone}). The slots returned by the tool are already converted to ${userTimeZone}.
                - **Step 3 (Interview):** If they pick a slot, ask for Name, Email, and Purpose ONE BY ONE. Do not ask for everything at once.
                - **Step 4 (Confirm):** Summarize details. Call \`create_booking\` ONLY after explicit confirmation.
             3. **Waitlist:** If a day is full, offer to check the next day or add them to a waitlist (pretend to add).
-            4. **Pre-Meeting:** After booking, ask: "Is there a specific document you'd like Samuel to review before the call?"
+            4. **Pre-Meeting:** After booking, ask: "Is there a specific document you'd like ${PROFILE.name} to review before the call?"
             5. **Handoff:** If the user seems frustrated, tell them they can use the manual "Book a Call" card.
             6. **Resume:** If user asks for resume, CV, or background info that requires a document, call \`get_resume\`.
             
@@ -341,7 +347,7 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
       headerRight={
         <button
           onClick={toggleTheme}
-          className="p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/60 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+          className="hidden lg:block p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/60 dark:text-zinc-400 hover:text-black dark:hover:text-white"
           title="Toggle Theme"
           aria-label="Toggle Theme"
         >
@@ -376,13 +382,13 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
                               <Download className="text-emerald-800 dark:text-emerald-200" size={14} />
                           </div>
                           <div className="flex flex-col">
-                              <span className="font-display text-sm text-emerald-900 dark:text-emerald-200 leading-none">Samuel's Resume</span>
+                              <span className="font-display text-sm text-emerald-900 dark:text-emerald-200 leading-none">{PROFILE.name}'s Resume</span>
                               <span className="text-[9px] uppercase font-bold text-emerald-600 dark:text-emerald-400 tracking-wider">PDF Document</span>
                           </div>
                       </div>
                       <a 
                           href="/public/assets/dev%20resume.pdf" 
-                          download="Samuel_Chiedozie_Resume.pdf"
+                          download={`${PROFILE.name}_Resume.pdf`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md font-bold text-[10px] shadow-sm transition-colors flex items-center gap-1 whitespace-nowrap"
@@ -394,7 +400,10 @@ export const AIChat: React.FC<AIChatProps> = ({ currentProject }) => {
               ) : (
                 // Standard Chat Bubbles
                 <div className={`flex items-start gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`w-8 h-8 rounded-full border-2 border-black dark:border-zinc-500 flex items-center justify-center shrink-0 ${msg.role === 'assistant' ? 'bg-yellow-200 dark:bg-yellow-600' : 'bg-blue-200 dark:bg-blue-600'} shadow-hard-pressed text-black dark:text-white`}>
+                  <div 
+                    className={`w-8 h-8 rounded-full border-2 border-black dark:border-zinc-500 flex items-center justify-center shrink-0 shadow-hard-pressed text-black dark:text-white`}
+                    style={{ backgroundColor: msg.role === 'assistant' ? (accentColor ? `${accentColor}40` : '#fef08a') : '#bfdbfe' }}
+                  >
                     {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
                   </div>
                   <div 
