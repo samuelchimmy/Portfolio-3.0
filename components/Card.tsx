@@ -27,23 +27,27 @@ export const Card: React.FC<CardProps> = ({ children, className, title, noPaddin
       )}
     >
       {/* Window Controls Header */}
-      <div className="border-b-2 border-black dark:border-zinc-400 p-3 bg-gray-50 dark:bg-zinc-800 flex items-center justify-between shrink-0 relative z-20 transition-colors duration-300">
-        <div className="flex gap-2">
+      <div className="border-b-2 border-black dark:border-zinc-400 p-3 bg-gray-50 dark:bg-zinc-800 flex items-center shrink-0 relative z-20 transition-colors duration-300">
+        {/* Left: Window Controls (Fixed Width) */}
+        <div className="flex gap-2 shrink-0">
           <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-black/20" />
           <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-black/20" />
           <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-black/20" />
         </div>
-        {title && (
-          <span className="font-display text-sm tracking-wider text-black/70 dark:text-zinc-300 truncate ml-4">
-            {title}
-          </span>
-        )}
-        {/* Render headerRight if present, otherwise a spacer for centering balance */}
-        {headerRight ? (
-          <div className="flex items-center">{headerRight}</div>
-        ) : (
-          <div className="w-8" />
-        )}
+        
+        {/* Center: Title (Flexible width with truncation) */}
+        <div className="flex-1 min-w-0 px-2 flex justify-center">
+            {title && (
+            <span className="font-display text-sm tracking-wider text-black/70 dark:text-zinc-300 truncate w-full text-center block">
+                {title}
+            </span>
+            )}
+        </div>
+
+        {/* Right: Action or Spacer (Fixed minimum width to balance left side) */}
+        <div className="shrink-0 flex items-center justify-end min-w-[44px]"> 
+            {headerRight ? headerRight : <div />} 
+        </div>
       </div>
 
       {/* Content */}
